@@ -14,7 +14,7 @@ import time
 
 #Initialize all constant values for simulation
 t_0 = math.pow(10, 11)
-t, m, l, b, xi = (t_0*1.1, math.pow(10,-10), math.pow(10,-20), 1.0, 0.0)
+t, m, l, b, xi = (t_0*1.1, math.pow(10,-11), math.pow(10,-20), 1.0, 0.0)
 #G_N = 6.7071186*math.pow(10.0, -39.0)
 #t_0 = 1.52*math.pow(10.0, -8.0)
 G_N = 1.0
@@ -25,15 +25,15 @@ G_N = 1.0
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 1000
-tolerance=1.48e-15
-rtolerance=1.48e-15
+dvm = 100
+tolerance=1.48e-08
+rtolerance=1.48e-08
 #Default tolerances
 #tol=1.48e-08 
 #rtol=1.48e-08
 
 #Resolution for figures
-resolution = 50
+resolution = 75
 
 
 #Timing decorator
@@ -60,9 +60,8 @@ def Gamma_phi(t):
 
 #Differential decay rate for massless particles
 def Gamma_psi(t, a):
-	g_p = math.pow(l, 2.0)*t*special.hankel1(a, m*t)*special.hankel2(a, m*t)/(32.0*m)
-	#return real part for now
-	return g_p.real
+	g_p = math.pow(l, 2.0)*t*(math.pow(special.jv(a, m*t), 2.0) + math.pow(special.yv(a, m*t), 2.0))/(32.0*m)
+	return g_p
 
 
 
@@ -70,30 +69,26 @@ def Gamma_psi(t, a):
 def alpha(n):
 	a = math.sqrt(1.0 - n*(n - 2.0)*(6.0*xi - 1.0))/(2.0 + n)
 	#Return only real part for now
-	return a.real 
+	return a
 
 #print Gamma_psi(10.0,10,10, alpha(4,0.0))
-'''
-@timing
+
+
 def f(t, t_0, n):
 	a = alpha(n)
-	print a
-	print l
 	r_p = integrate.romberg(lambda x: Gamma_psi(x, a), t_0, t, divmax=dvm, tol=tolerance, rtol=rtolerance)
 	return r_p
-'''
-#@timing
-def f(t, t_0, n):
-	a = alpha(n)
-	print a
-	print l
-	return math.pow(l*t/8.0, 2.0)*(math.pow(special.jv(a, m*t), 2.0) - special.jv(a-1, m*t)*special.jv(a+1, m*t)
-								- special.yv(a, m*t)*special.yv(a-1, m*t) + math.pow(special.yv(a, m*t), 2.0)
-								- math.pow(special.jv(a, m*t_0), 2.0) + special.jv(a-1, m*t_0)*special.jv(a+1, m*t_0)
-								+ special.yv(a, m*t_0)*special.yv(a-1, m*t_0) - math.pow(special.yv(a, m*t_0), 2.0)) 
 
-#print f(t_0*100, t_0, 4)
-#print f2(t_0*100, t_0, 4)
+@timing
+def f2(t, t_0, n):
+	a = alpha(n)
+	return math.pow(l*t, 2.0)*(math.pow(special.jv(a, m*t), 2.0) - special.jv(a-1, m*t)*special.jv(a+1, m*t)
+								- special.yv(a+1, m*t)*special.yv(a-1, m*t) + math.pow(special.yv(a, m*t), 2.0)
+								- math.pow(special.jv(a, m*t_0), 2.0) + special.jv(a-1, m*t_0)*special.jv(a+1, m*t_0)
+								+ special.yv(a+1, m*t_0)*special.yv(a-1, m*t_0) - math.pow(special.yv(a, m*t_0), 2.0))/64.0 
+
+#print f(100*t_0, t_0, 2)
+#print f2(100*t_0, t_0, 2)
 
 
 def scale_factor(t):
@@ -129,10 +124,10 @@ def rho_stiff(t):
 ################################################# UINVERSE ENDS UP IN MATTER DOMINATED ERA ################################################# 
 
 def matter_minus_stiff(t, t_0, n):
-	return rho_phi(t, t_0, n) - rho_stiff(t)
+	return abs(rho_phi(t, t_0, n) - rho_stiff(t))
 
 def rad_minus_stiff(t, t_0, n):
-	return rho_psi(t, t_0, n) - rho_stiff(t)
+	return abs(rho_psi(t, t_0, n) - rho_stiff(t))
 
 
 
@@ -181,7 +176,7 @@ def rho_psi_mat(t, n, eq_time, rho_psi_eq, rho_eq):
 
 
 def matter_minus_rad(t, n, eq_time, rho_psi_eq, rho_eq):
-	return rho_phi_mat(t, n, eq_time, rho_eq) - rho_psi_mat(t, n, eq_time, rho_psi_eq, rho_eq)
+	return abs(rho_phi_mat(t, n, eq_time, rho_eq) - rho_psi_mat(t, n, eq_time, rho_psi_eq, rho_eq))
 
 
 #Solve when radiation dominated era begins
@@ -211,7 +206,15 @@ def rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 	a = alpha(n)
 	return math.pow(math.pow(1.0/t, 1.0/2.0), 4.0)*integrate.romberg(lambda x: Gamma_psi(x, a)*rho_phi_rad(x, n, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance) + psi_tau*math.pow(math.pow(eq_tau/t, 1.0/2.0), 4.0)
 
-
+'''
+def d_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
+	a = alpha(n)
+	return -(2.0/math.pow(t, 3.0))*integrate.romberg(lambda x: Gamma_psi(x, a)*rho_phi_rad(x, n, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance) + math.pow(1.0/t, 2.0)*Gamma_psi(t, a)*rho_phi_rad(t, n, eq_tau, rho_tau)*math.pow(math.pow(t, 1.0/2.0), 4.0) - 2*psi_tau*math.pow(t_0, 2.0)*math.pow(1.0/t, 3.0)
+'''
+def d_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
+	a = alpha(n)
+	delta = 100000
+	return (rho_psi_rad(t + delta, n, eq_tau, rho_tau, psi_tau)- rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau))
 
 def neg_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 	return -1*rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau)
@@ -219,8 +222,8 @@ def neg_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 
 def reheating_temperature(t, n, eq_tau, rho_tau, psi_tau):
 	data = (n, eq_tau, rho_tau, psi_tau)
-	cons = {'type': 'ineq', 'fun': lambda x: x[0]- eq_tau}
-	rh_time = minimize(neg_rho_psi_rad, t, args=data, constraints=cons)
+	cons = {'type': 'ineq', 'fun': lambda x: x - eq_tau}
+	rh_time = minimize(neg_rho_psi_rad, t, args=data, jac=d_rho_psi_rad, constraints=cons, method='SLSQP')
 	print rh_time
 	return rh_time
 
@@ -230,6 +233,7 @@ def reheating_temperature(t, n, eq_tau, rho_tau, psi_tau):
 ######################## MAIN #####################
 
 def reheating_time(t, t_0):
+	global n
 	#First calculate time when density of radiation equals that of stiff matter
 	#n equals 1 at this time
 	n = 1
@@ -321,23 +325,22 @@ def reheating_time(t, t_0):
 		#Matter dominated era begins, and n is now 4
 		n = 4
 
-		etime_rad = eq_tau(etime_mat, n, etime_mat, psi_1, phi_1)
+		etime_rad = eq_tau(etime_mat*1.1, n, etime_mat, psi_1, phi_1)
 		print etime_rad
-		return
 		phi_2 = rho_phi_mat(etime_rad, n, etime_mat, phi_1)
 		psi_2 = rho_psi_mat(etime_rad, n, etime_mat, psi_1, phi_1)
 		print phi_2
 		print psi_2
 
 		plt.figure("Matter dominated era")
-		rad_era = np.linspace(etime_mat, etime_rad*1.4, resolution) # 100 linearly spaced numbers
-		mat = np.array([rho_phi_mat(z, n, etime_mat, phi_1) for z in rad_era])
-		rad = np.array([rho_psi_mat(z, n, etime_mat, psi_1, phi_1) for z in rad_era])
-		stiff = np.array([rho_stiff(z) for z in rad_era])
-		plt.ylim(0, rad[-1]*1.1)
-		plt.plot(rad_era, mat, 'b-')
-		plt.plot(rad_era, rad, 'y-')
-		plt.plot(rad_era, stiff, 'r-')
+		mat_era = np.linspace(etime_mat, etime_rad*1.1, resolution) # 100 linearly spaced numbers
+		mat = np.array([rho_phi_mat(z, n, etime_mat, phi_1) for z in mat_era])
+		rad = np.array([rho_psi_mat(z, n, etime_mat, psi_1, phi_1) for z in mat_era])
+		stiff = np.array([rho_stiff(z) for z in mat_era])
+		plt.ylim(0, max(psi_1, psi_2)*1.1)
+		plt.plot(mat_era, mat, 'b-')
+		plt.plot(mat_era, rad, 'y-')
+		plt.plot(mat_era, stiff, 'r-')
 		
 		#Radiation dominated era begins, n equals 2
 		n = 2
@@ -357,14 +360,50 @@ def reheating_time(t, t_0):
 		mat = np.array([rho_phi_rad(z, n, etime_rad, phi_2) for z in rad_era])
 		rad = np.array([rho_psi_rad(z, n, etime_rad, phi_2, psi_2) for z in rad_era])
 		stiff = np.array([rho_stiff(z) for z in rad_era])
-		plt.ylim(0, rad[-1]*1.1)
+		plt.ylim(0, max(rad)*1.1)
 		plt.plot(rad_era, mat, 'b-')
 		plt.plot(rad_era, rad, 'y-')
 		plt.plot(rad_era, stiff, 'r-')
 
 		plt.show()
 
-reheating_time(t, t_0)
+print reheating_temperature(1.1*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
+print 1.1*5.393476178852372e+19
+print d_rho_psi_rad(1.66*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
+print rho_psi_rad(1.66*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
+
+print d_rho_psi_rad(1.1*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
+print rho_psi_rad(1.1*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
+
+
+plt.figure("Radiation dominated era")
+rad_era = np.linspace(1.1*5.393476178852372e+19, 1.05*5.393476178852372e+19, 100) # 100 linearly spaced numbers
+
+rad = np.array([rho_psi_rad(z, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42) for z in rad_era])
+
+rad_d = np.array([d_rho_psi_rad(z, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42) for z in rad_era])
+
+print rad_d
+
+plt.plot(rad_era, rad, 'y-')
+plt.plot(rad_era, rad_d, 'g-')
+plt.show()
 
 
 
+
+
+
+
+
+#reheating_time(t, t_0)
+'''
+n = 2
+r_t = 46988402390417.16
+c = 1000
+phi_2 = rho_phi_mat(r_t*c, n, r_t, 6.0069985503872694e-30)
+psi_2 = rho_psi_mat(r_t*c, n, r_t, 1.4037836450174952e-38, 6.0069985503872694e-30)
+print phi_2
+print psi_2
+print phi_2 > psi_2
+'''
