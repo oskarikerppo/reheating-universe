@@ -14,7 +14,7 @@ import time
 
 #Initialize all constant values for simulation
 t_0 = math.pow(10, 11)
-t, m, l, b, xi = (t_0*1.1, math.pow(10,-11), math.pow(10,-20), 1.0, 0.0)
+t, m, l, b, xi = (t_0*1.1, math.pow(10,-10), math.pow(10,-20), 1.0, 0.0)
 #G_N = 6.7071186*math.pow(10.0, -39.0)
 #t_0 = 1.52*math.pow(10.0, -8.0)
 G_N = 1.0
@@ -25,7 +25,7 @@ G_N = 1.0
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 100
+dvm = 25
 tolerance=1.48e-08
 rtolerance=1.48e-08
 #Default tolerances
@@ -33,7 +33,7 @@ rtolerance=1.48e-08
 #rtol=1.48e-08
 
 #Resolution for figures
-resolution = 75
+resolution = 50
 
 
 #Timing decorator
@@ -196,7 +196,7 @@ def eq_tau(t, n, eq_time, rho_psi_eq, rho_eq):
 
 
 def rho_phi_rad(t, n, eq_tau, rho_tau):
-	return math.pow(math.pow(eq_tau/t, 1.0/2.0), 3)*(math.exp(-f(t, eq_tau, n)) * rho_tau)
+	return math.pow(math.pow(eq_tau/t, 1.0/2.0), 3.0)*(math.exp(-f(t, eq_tau, n)) * rho_tau)
 
 #print rho_phi_rad(1500, 0.001, 2, 3, 1.1, 0.01)
 
@@ -206,16 +206,16 @@ def rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 	a = alpha(n)
 	return math.pow(math.pow(1.0/t, 1.0/2.0), 4.0)*integrate.romberg(lambda x: Gamma_psi(x, a)*rho_phi_rad(x, n, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance) + psi_tau*math.pow(math.pow(eq_tau/t, 1.0/2.0), 4.0)
 
-'''
+
 def d_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 	a = alpha(n)
-	return -(2.0/math.pow(t, 3.0))*integrate.romberg(lambda x: Gamma_psi(x, a)*rho_phi_rad(x, n, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance) + math.pow(1.0/t, 2.0)*Gamma_psi(t, a)*rho_phi_rad(t, n, eq_tau, rho_tau)*math.pow(math.pow(t, 1.0/2.0), 4.0) - 2*psi_tau*math.pow(t_0, 2.0)*math.pow(1.0/t, 3.0)
+	return -2.0*integrate.romberg(lambda x: Gamma_psi(x, a)*rho_phi_rad(x, n, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance)/math.pow(t, 3.0) + Gamma_psi(t, a)*rho_phi_rad(t, n, eq_tau, rho_tau) - 2*psi_tau*math.pow(eq_tau, 2.0)*math.pow(1.0/t, 3.0)
 '''
 def d_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 	a = alpha(n)
 	delta = 100000
 	return (rho_psi_rad(t + delta, n, eq_tau, rho_tau, psi_tau)- rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau))
-
+'''
 def neg_rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau):
 	return -1*rho_psi_rad(t, n, eq_tau, rho_tau, psi_tau)
 
@@ -367,43 +367,6 @@ def reheating_time(t, t_0):
 
 		plt.show()
 
-print reheating_temperature(1.1*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
-print 1.1*5.393476178852372e+19
-print d_rho_psi_rad(1.66*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
-print rho_psi_rad(1.66*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
-
-print d_rho_psi_rad(1.1*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
-print rho_psi_rad(1.1*5.393476178852372e+19, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42)
 
 
-plt.figure("Radiation dominated era")
-rad_era = np.linspace(1.1*5.393476178852372e+19, 1.05*5.393476178852372e+19, 100) # 100 linearly spaced numbers
-
-rad = np.array([rho_psi_rad(z, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42) for z in rad_era])
-
-rad_d = np.array([d_rho_psi_rad(z, 2, 5.393476178852372e+19, 1.5592423667960964e-42, 1.5592423667960964e-42) for z in rad_era])
-
-print rad_d
-
-plt.plot(rad_era, rad, 'y-')
-plt.plot(rad_era, rad_d, 'g-')
-plt.show()
-
-
-
-
-
-
-
-
-#reheating_time(t, t_0)
-'''
-n = 2
-r_t = 46988402390417.16
-c = 1000
-phi_2 = rho_phi_mat(r_t*c, n, r_t, 6.0069985503872694e-30)
-psi_2 = rho_psi_mat(r_t*c, n, r_t, 1.4037836450174952e-38, 6.0069985503872694e-30)
-print phi_2
-print psi_2
-print phi_2 > psi_2
-'''
+reheating_time(t, t_0)
