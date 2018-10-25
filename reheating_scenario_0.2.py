@@ -14,20 +14,19 @@ import time
 
 #Initialize all constant values for simulation
 t_0 = math.pow(10, 11)
-t, m, l, b, xi = (t_0*1.1, math.pow(10,-10), math.pow(10,-20), 1.0, 0.0)
+t, m, l, b, xi = (t_0*1.1, math.pow(10,-15), math.pow(10,-20), 1.0, 0.0)
 #G_N = 6.7071186*math.pow(10.0, -39.0)
 #t_0 = 1.52*math.pow(10.0, -8.0)
 G_N = 1.0
 #t_0 = math.pow(10.0,-32.0)
 
 
-
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 25
-tolerance=1.48e-08
-rtolerance=1.48e-08
+dvm = 1000000000
+tolerance=1.48e-35
+rtolerance=1.48e-35
 #Default tolerances
 #tol=1.48e-08 
 #rtol=1.48e-08
@@ -79,16 +78,18 @@ def f(t, t_0, n):
 	r_p = integrate.romberg(lambda x: Gamma_psi(x, a), t_0, t, divmax=dvm, tol=tolerance, rtol=rtolerance)
 	return r_p
 
+def bessel(t, a):
+	b = math.pow(l*t, 2.0)*(math.pow(special.jv(a, m*t), 2.0) - special.jv(a-1, m*t)*special.jv(a+1, m*t) - special.yv(a+1, m*t)*special.yv(a-1, m*t) + math.pow(special.yv(a, m*t), 2.0))/64.0 
+	#print b
+	return b 
+
 @timing
 def f2(t, t_0, n):
 	a = alpha(n)
-	return math.pow(l*t, 2.0)*(math.pow(special.jv(a, m*t), 2.0) - special.jv(a-1, m*t)*special.jv(a+1, m*t)
-								- special.yv(a+1, m*t)*special.yv(a-1, m*t) + math.pow(special.yv(a, m*t), 2.0)
-								- math.pow(special.jv(a, m*t_0), 2.0) + special.jv(a-1, m*t_0)*special.jv(a+1, m*t_0)
-								+ special.yv(a+1, m*t_0)*special.yv(a-1, m*t_0) - math.pow(special.yv(a, m*t_0), 2.0))/64.0 
+	return bessel(t, a)- bessel(t_0, a)
 
-#print f(100*t_0, t_0, 2)
-#print f2(100*t_0, t_0, 2)
+print f(1, 0.1, 1)
+print f2(1, 0.1, 1)
 
 
 def scale_factor(t):
@@ -300,7 +301,7 @@ def reheating_time(t, t_0):
 		#n equals 4 at this era
 		#Calculate intersection of stiff and matter
 		n = 1
-		etime_mat = eq_time(t_0, t_0, n)
+		etime_mat = eq_time(t, t_0, n)
 	
 		print etime_mat
 		plt.figure("Stiff matter dominated era")
@@ -369,4 +370,6 @@ def reheating_time(t, t_0):
 
 
 
-reheating_time(t, t_0)
+#reheating_time(t, t_0)
+#n=1
+#print eq_time(t, t_0, n)
