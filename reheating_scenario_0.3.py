@@ -16,7 +16,8 @@ from mpmath import *
 
 #Initialize all constant values for simulation
 t_0 = 10**11
-t, m, l, b, xi = (t_0*1.1, 10**-12.5, 10**-20, 1.0, 0.0)
+t, m, l, b, xi = (t_0*1.1, 10**-12, 10**-20, 10**-1, 1.0/6)
+print "xi: " + str(xi)
 #G_N = 6.7071186*math.pow(10.0, -39.0)
 #t_0 = 1.52*math.pow(10.0, -8.0)
 G_N = 1.0
@@ -26,7 +27,7 @@ G_N = 1.0
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 100
+dvm = 25
 tolerance=1.48e-08
 rtolerance=1.48e-08
 #Default tolerances
@@ -399,7 +400,7 @@ def reheating_time(t, t_0):
 		mat = np.array([rho_phi_mat(z, n, etime_mat, phi_1) for z in mat_era])
 		rad = np.array([rho_psi_mat(z, n, etime_mat, psi_1, phi_1) for z in mat_era])
 		stiff = np.array([rho_stiff(z) for z in mat_era])
-		plt.ylim(0, max(psi_1, psi_2)*1.1)
+		plt.ylim(0, max(phi_1, phi_2)*1.1)
 		plt.plot(mat_era, mat, 'b-')
 		plt.plot(mat_era, rad, 'y-')
 		plt.plot(mat_era, stiff, 'r-')
