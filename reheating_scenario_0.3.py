@@ -16,7 +16,7 @@ from mpmath import *
 
 #Initialize all constant values for simulation
 t_0 = 10**11
-t, m, l, b, xi = (t_0*1.1, 10**-17, 10**-20, 1.0, 0.0)
+t, m, l, b, xi = (t_0*1.1, 10**-12.5, 10**-20, 1.0, 0.0)
 #G_N = 6.7071186*math.pow(10.0, -39.0)
 #t_0 = 1.52*math.pow(10.0, -8.0)
 G_N = 1.0
@@ -26,7 +26,7 @@ G_N = 1.0
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 10
+dvm = 100
 tolerance=1.48e-08
 rtolerance=1.48e-08
 #Default tolerances
@@ -90,7 +90,7 @@ def f(t, t_0, n):
 '''
 @timing
 def f2(t, t_0, n):
-	return quad(lambda x: Gamma_psi(x, alpha(n)), [t_0, t])
+	return integrate.quad(lambda x: Gamma_psi(x, alpha(n)), t_0, t)
 
 
 def bessel(t, a):
@@ -110,13 +110,20 @@ def f3(t, t_0, n):
 	p0 = m*t_0
 	value = (power(besselj(a, p), 2) - mpf(besselj(a-1, p))*mpf(besselj(a+1, p)) - mpf(bessely(a+1, p))*mpf(bessely(a-1, p)) + power(bessely(a, p), 2))*(power(t, 2)) - (power(besselj(a, p0), 2) - mpf(besselj(a-1, p0))*mpf(besselj(a+1, p0)) - mpf(bessely(a+1, p0))*mpf(bessely(a-1, p0)) + power(bessely(a, p0), 2))*(power(t_0, 2))
 	return (power(l, 2)) * mpf(value) / mpf(64.0)
-
-
 '''
-print f(t_0*1.1, t_0, 1)
-print f2(t_0*1.1, t_0, 1)
-print f3(t_0*1.1, t_0, 1)
+print t_0
+print t_0*5
+
+rad = np.linspace(t_0, t_0*5, 100)
+r = np.array([Gamma_psi(z, 1) for z in rad])
+plt.plot(rad, r)
+plt.show()
 '''
+
+#print f(t_0*1.1, t_0, 1)
+#print f2(t_0*1.1, t_0, 1)
+#print f3(t_0*1.1, t_0, 1)
+
 
 '''
 f = -19
@@ -266,6 +273,18 @@ def reheating_temperature(t, n, eq_tau, rho_tau, psi_tau):
 	return rh_time
 
 
+def r_time(t, eq_tau, rho_tau, psi_tau):
+	#First calculate derivative of radiation density at equal time
+	d_1 = d_rho_psi_rad(eq_tau, 2, eq_tau, rho_tau, psi_tau)
+	if d_1 < 0:
+		#The maximum value is the initial value
+		return eq_tau
+	data = (n, eq_tau, rho_tau, psi_tau)	
+	rt = fsolve(d_rho_psi_rad, t, data)
+	print rt
+	return rt[0]
+
+
 
 
 ######################## MAIN #####################
@@ -309,20 +328,20 @@ def reheating_time(t, t_0):
 		
 		
 		#Sove for the reheating temperature
-		reh_time = reheating_temperature(etime_rad*3, n, etime_rad, phi_rad_init, psi_rad_init)
-		print -1*reh_time['fun']
-		print rho_psi_rad(reh_time['x'], n, etime_rad, phi_rad_init, psi_rad_init)
+		reh_time = r_time(etime_rad*1.1, etime_rad, phi_rad_init, psi_rad_init)
+		print reh_time
+		print rho_psi_rad(reh_time, n, etime_rad, phi_rad_init, psi_rad_init)
 		#Transfer reheating time to temperature
 		print "Reheating temperature: "
-		print math.pow(rho_psi_rad(reh_time['x'], n, etime_rad, phi_rad_init, psi_rad_init),1.0/4.0)
+		print math.pow(rho_psi_rad(reh_time, n, etime_rad, phi_rad_init, psi_rad_init),1.0/4.0)
 
 
 		print "RADIATION INTERSECTS STIFF: " + str(etime_rad)
-		print "REHEATING TIME: " + str(reh_time['x'])
-		print "REHEATING TIME LARGER THAN FIRST INTERSECTION (NEEDS TO BE TRUE): {}".format(str(float(reh_time['x']) > float(etime_rad)))
+		print "REHEATING TIME: " + str(reh_time)
+		print "REHEATING TIME LARGER THAN FIRST INTERSECTION (NEEDS TO BE TRUE): {}".format(str(float(reh_time) > float(etime_rad)))
 
 		plt.figure("Radiation dominated era")
-		rad_era = np.linspace(etime_rad, reh_time['x']*1.1, resolution) # 100 linearly spaced numbers
+		rad_era = np.linspace(etime_rad, reh_time*1.5, resolution) # 100 linearly spaced numbers
 		mat = np.array([rho_phi_rad(z, n, etime_rad, phi_rad_init) for z in rad_era])
 		rad = np.array([rho_psi_rad(z, n, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
 		d_rad = np.array([d_rho_psi_rad(z, n, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
@@ -390,18 +409,20 @@ def reheating_time(t, t_0):
 		
 		
 		#Sove for the reheating temperature
-		reh_time = reheating_temperature(etime_rad*1.1, n, etime_rad, phi_2, psi_2)
-		print -1*reh_time['fun']
-		print rho_psi_rad(reh_time['x'], n, etime_rad, phi_2, psi_2)
+		reh_time = r_time(etime_rad*1.1, etime_rad, phi_2, psi_2)
+		print reh_time
+		print rho_psi_rad(reh_time, n, etime_rad, phi_2, psi_2)
 		#Transfer reheating time to temperature
 		print "Reheating temperature: "
-		print math.pow(rho_psi_rad(reh_time['x'], n, etime_rad, phi_2, psi_2),1.0/4.0)
+		print math.pow(rho_psi_rad(reh_time, n, etime_rad, phi_2, psi_2),1.0/4.0)
 
 
 		plt.figure("Radiation dominated era")
-		rad_era = np.linspace(etime_rad, reh_time['x']*1.1, resolution) # 100 linearly spaced numbers
+		rad_era = np.linspace(etime_rad, reh_time*1.5, resolution) # 100 linearly spaced numbers
 		mat = np.array([rho_phi_rad(z, n, etime_rad, phi_2) for z in rad_era])
 		rad = np.array([rho_psi_rad(z, n, etime_rad, phi_2, psi_2) for z in rad_era])
+		d_rad = np.array([d_rho_psi_rad(z, n, etime_rad, phi_2, psi_2) for z in rad_era])
+		print d_rad
 		stiff = np.array([rho_stiff(z) for z in rad_era])
 		plt.ylim(0, max(rad)*1.1)
 		plt.plot(rad_era, mat, 'b-')
