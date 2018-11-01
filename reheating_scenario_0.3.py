@@ -16,7 +16,7 @@ from mpmath import *
 
 #Initialize all constant values for simulation
 t_0 = 10**11
-t, m, l, b, xi = (t_0*1.1, 10**-12, 10**-20, 10**-1, 1.0/6)
+t, m, l, b, xi = (t_0*1.1, 10**-12, 10**-19, 10**-2, 0/6)
 print "xi: " + str(xi)
 #G_N = 6.7071186*math.pow(10.0, -39.0)
 #t_0 = 1.52*math.pow(10.0, -8.0)
@@ -27,9 +27,9 @@ G_N = 1.0
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 25
-tolerance=1.48e-08
-rtolerance=1.48e-08
+dvm = 1000000
+tolerance=1.48e-12
+rtolerance=1.48e-12
 #Default tolerances
 #tol=1.48e-08 
 #rtol=1.48e-08
@@ -39,7 +39,7 @@ resolution = 50
 
 
 mp.dps = 200
-print mp
+#print mp
 
 
 #Timing decorator
@@ -111,35 +111,13 @@ def f3(t, t_0, n):
 	p0 = m*t_0
 	value = (power(besselj(a, p), 2) - mpf(besselj(a-1, p))*mpf(besselj(a+1, p)) - mpf(bessely(a+1, p))*mpf(bessely(a-1, p)) + power(bessely(a, p), 2))*(power(t, 2)) - (power(besselj(a, p0), 2) - mpf(besselj(a-1, p0))*mpf(besselj(a+1, p0)) - mpf(bessely(a+1, p0))*mpf(bessely(a-1, p0)) + power(bessely(a, p0), 2))*(power(t_0, 2))
 	return (power(l, 2)) * mpf(value) / mpf(64.0)
-'''
-print t_0
-print t_0*5
-
-rad = np.linspace(t_0, t_0*5, 100)
-r = np.array([Gamma_psi(z, 1) for z in rad])
-plt.plot(rad, r)
-plt.show()
-'''
-
-#print f(t_0*1.1, t_0, 1)
-#print f2(t_0*1.1, t_0, 1)
-#print f3(t_0*1.1, t_0, 1)
 
 
-'''
-f = -19
-j0 = special.jv(1,10**f)
-ja = lambda x: besselj(1, x)
-j1 =  ja(10**f)
-print j1
-print j0
-'''
 
 
 def scale_factor(t):
 	return math.pow(t, 1.0/3.0)
 
-#print f(1.0,0.001, 4, 0.01,0.01)
 
 #Energy density for massive particles
 def rho_phi(t, t_0, n):
@@ -158,8 +136,17 @@ def rho_psi(t, t_0, n):
 #Energy density of stiff matter
 def rho_stiff(t):
 	return 1.0 / (24.0*math.pi*G_N*math.pow(t, 2.0))
-#print "G_N: " + str(G_N)
-#print rho_stiff(0.1, G_N)
+
+
+def rho_stiff_mat(t, t_0):
+	return math.pow(t_0, 4.0) / (24.0*math.pi*G_N*math.pow(t_0, 2.0)*math.pow(t, 4.0))
+
+def rho_stiff_rad(t, t_0, t_1):
+	return math.pow(t_0, 4.0) * math.pow(t_1, 3.0) / (24.0*math.pi*G_N*math.pow(t_0, 2.0)*math.pow(t_1, 4.0)*math.pow(t, 3.0))
+
+
+def rho_stiff_rad_no_mat(t, t_0):
+	return math.pow(t_0, 3.0) / (24.0*math.pi*G_N*math.pow(t_0, 2.0)*math.pow(t, 3.0))
 
 
 
@@ -346,8 +333,8 @@ def reheating_time(t, t_0):
 		mat = np.array([rho_phi_rad(z, n, etime_rad, phi_rad_init) for z in rad_era])
 		rad = np.array([rho_psi_rad(z, n, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
 		d_rad = np.array([d_rho_psi_rad(z, n, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
-		stiff = np.array([rho_stiff(z) for z in rad_era])
-		plt.ylim(0, rad[-1]*1.1)
+		stiff = np.array([rho_stiff_rad_no_mat(z, etime_rad) for z in rad_era])
+		plt.ylim(0, max(rad)*1.1)
 		plt.plot(rad_era, mat, 'b-')
 		plt.plot(rad_era, rad, 'y-')
 		plt.plot(rad_era, d_rad, 'g-')
@@ -399,7 +386,7 @@ def reheating_time(t, t_0):
 		mat_era = np.linspace(etime_mat, etime_rad*1.1, resolution) # 100 linearly spaced numbers
 		mat = np.array([rho_phi_mat(z, n, etime_mat, phi_1) for z in mat_era])
 		rad = np.array([rho_psi_mat(z, n, etime_mat, psi_1, phi_1) for z in mat_era])
-		stiff = np.array([rho_stiff(z) for z in mat_era])
+		stiff = np.array([rho_stiff_mat(z, etime_mat) for z in mat_era])
 		plt.ylim(0, max(phi_1, phi_2)*1.1)
 		plt.plot(mat_era, mat, 'b-')
 		plt.plot(mat_era, rad, 'y-')
@@ -424,7 +411,7 @@ def reheating_time(t, t_0):
 		rad = np.array([rho_psi_rad(z, n, etime_rad, phi_2, psi_2) for z in rad_era])
 		d_rad = np.array([d_rho_psi_rad(z, n, etime_rad, phi_2, psi_2) for z in rad_era])
 		print d_rad
-		stiff = np.array([rho_stiff(z) for z in rad_era])
+		stiff = np.array([rho_stiff_rad(z, etime_mat, etime_rad) for z in rad_era])
 		plt.ylim(0, max(rad)*1.1)
 		plt.plot(rad_era, mat, 'b-')
 		plt.plot(rad_era, rad, 'y-')
@@ -435,5 +422,3 @@ def reheating_time(t, t_0):
 
 
 reheating_time(t, t_0)
-#n=1
-#print eq_time(t, t_0, n)
