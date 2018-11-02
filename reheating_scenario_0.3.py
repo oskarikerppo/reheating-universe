@@ -352,7 +352,7 @@ def generate_datapoints():
 		for b in b_points:
 			for l in [10**-3, 10**-2, 10**-1]:
 				for xi in [minimal_xi, conformal_xi]:
-					data.append((1.1*t_0, t_0, m, l, b, xi, G_N, plot))
+					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
 	return data
 
 
@@ -364,6 +364,6 @@ if __name__ == "__main__":
 	p = Pool(4)
 	data = generate_datapoints() 
 	results = p.map(reheating_time_star, data)
-	print "Results took: {} seconds".format(str(time.time() - start))
+	print("Results took: {} seconds".format(str(time.time() - start)))
 	with open('results.pkl', 'wb') as f:
 		pickle.dump(results, f)
