@@ -357,7 +357,6 @@ def generate_datapoints():
 
 
 
-
 if __name__ == "__main__":
 	start = time.time()
 	plot = False
