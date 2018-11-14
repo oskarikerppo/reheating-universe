@@ -338,14 +338,14 @@ def generate_datapoints():
 
 	max_mass = 10**-7
 	min_mass = 10**-17
-	mass_points = np.linspace(min_mass, max_mass, 5)
+	mass_points = np.linspace(min_mass, max_mass, 25)
 
 	min_lambda = 10**-3
 	max_lambda = 10**-1
 
 	min_b = 10**-3
 	max_b = 10**1
-	b_points = np.linspace(min_b, max_b, 5)
+	b_points = np.linspace(min_b, max_b, 25)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -363,7 +363,7 @@ if __name__ == "__main__":
 	start = time.time()
 	plot = False
 	results = []
-	p = Pool(processes=6)
+	p = Pool(processes=4)
 	data = generate_datapoints() 
 	for i, x in enumerate(p.imap_unordered(reheating_time_star, data, 1)):
 		results.append(x)
