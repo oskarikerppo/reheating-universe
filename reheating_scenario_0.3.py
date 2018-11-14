@@ -120,7 +120,7 @@ def eq_time2(t, t_0, n, xi, m, l, b, G_N):
 	t_eq = fsolve(rad_minus_stiff, t, args=data)
 	r_p = rho_psi(t_eq, t_0, n, xi, m, l, b)
 	r_s = rho_stiff(t_eq, G_N)
-	print("Absolute error: ") + str(r_p - r_s)
+	#print("Absolute error: ") + str(r_p - r_s)
 	return t_eq[0]
 
 
@@ -336,16 +336,16 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = 10**-8
+	max_mass = 10**-7
 	min_mass = 10**-17
-	mass_points = np.linspace(min_mass, max_mass, 2)
+	mass_points = np.linspace(min_mass, max_mass, 5)
 
 	min_lambda = 10**-3
 	max_lambda = 10**-1
 
-	min_b = 10**-1
-	max_b = 1.0
-	b_points = np.linspace(min_b, max_b, 2)
+	min_b = 10**-3
+	max_b = 10**1
+	b_points = np.linspace(min_b, max_b, 5)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -368,7 +368,6 @@ if __name__ == "__main__":
 	for i, x in enumerate(p.imap_unordered(reheating_time_star, data, 1)):
 		results.append(x)
 		sys.stderr.write('\rdone {0:%}'.format(float(i)/len(data)))
-		print("Results took: {} seconds".format(str(time.time() - start)))
 	with open('results.pkl', 'wb') as f:
 		pickle.dump(results, f)
 	
