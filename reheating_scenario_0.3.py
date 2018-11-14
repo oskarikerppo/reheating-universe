@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
+from __future__ import division
 import math
 import numpy as np
 from scipy import special
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 import time
 from multiprocessing import Pool
 import cPickle as pickle
+import sys
 
 
 #The constant n: 1 for stiff matter, 2 for radiation, 4 for matter
@@ -334,16 +336,16 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = 10**-4
+	max_mass = 10**-8
 	min_mass = 10**-17
-	mass_points = np.linspace(min_mass, max_mass, 25)
+	mass_points = np.linspace(min_mass, max_mass, 2)
 
 	min_lambda = 10**-3
 	max_lambda = 10**-1
 
-	min_b = 10**-3
-	max_b = 10**2
-	b_points = np.linspace(min_b, max_b, 25)
+	min_b = 10**-1
+	max_b = 1.0
+	b_points = np.linspace(min_b, max_b, 2)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -360,9 +362,13 @@ def generate_datapoints():
 if __name__ == "__main__":
 	start = time.time()
 	plot = False
-	p = Pool(4)
+	results = []
+	p = Pool(processes=6)
 	data = generate_datapoints() 
-	results = p.map(reheating_time_star, data)
-	print("Results took: {} seconds".format(str(time.time() - start)))
+	for i, x in enumerate(p.imap_unordered(reheating_time_star, data, 1)):
+		results.append(x)
+		sys.stderr.write('\rdone {0:%}'.format(float(i)/len(data)))
+		print("Results took: {} seconds".format(str(time.time() - start)))
 	with open('results.pkl', 'wb') as f:
 		pickle.dump(results, f)
+	
