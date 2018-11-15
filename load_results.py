@@ -84,7 +84,7 @@ def create_Z(x, y, l, xi):
 	return Z, M
 
 
-Z, M = create_Z(X, Y, 10**-1, 1.0/6)
+Z, M = create_Z(X, Y, 10**-3, 1.0/6)
 
 '''
 X = X-np.min(X)
