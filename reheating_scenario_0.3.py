@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import time
 from multiprocessing import Pool
-import cPickle as pickle
+import pickle as pickle
 import sys
 
 
@@ -44,7 +44,7 @@ def timing(f):
         time1 = time.time()
         ret = f(*args)
         time2 = time.time()
-        print '%s function took %0.3f ms' % (f.func_name, (time2-time1)*1000.0)
+        print('%s function took %0.3f ms' % (f.func_name, (time2-time1)*1000.0))
         return ret
     return wrap
 
@@ -338,14 +338,14 @@ def generate_datapoints():
 
 	max_mass = -7
 	min_mass = -17
-	mass_points = np.logspace(min_mass, max_mass, 40, endpoint=True, base=10)
+	mass_points = np.logspace(min_mass, max_mass, 4, endpoint=True, base=10)
 
 	min_lambda = 10**-3
 	max_lambda = 10**-1
 
 	min_b = -3
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 40, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 4, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6

@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle as pickle
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -12,7 +12,7 @@ temps= []
 for x in results:
 	temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1]])
 
-print len(temps)
+print(len(temps))
 mat_temps = []
 rad_temps = []
 
@@ -22,22 +22,10 @@ for x in temps:
 	else:
 		rad_temps.append(x)
 
-print len(rad_temps)
-print max(rad_temps)
-print min(rad_temps)
-print len(mat_temps)
-print max(mat_temps)
-print min(mat_temps)
-
 mass_points = list(set([x[1] for x in temps]))
 b_points = list(set([x[3] for x in temps])) 
 
 X, Y = np.meshgrid(mass_points, b_points)
-
-
-
-print X.shape
-print Y.shape
 
 def create_string_tick(x):
 	x = str(x)
@@ -68,8 +56,8 @@ def create_Z(x, y, l, xi):
 	Z = np.zeros((len(x), len(y)))
 	M = np.zeros((len(x), len(y)))
 	data = [h for h in temps if h[4] == xi and h[2] == l*h[1]]
-	print max(data)
-	print min(data)
+	print(max(data))
+	print(min(data))
 	for i in tqdm(range(len(x))):
 		for j in tqdm(range(len(y))):
 			for k in range(len(data)):
