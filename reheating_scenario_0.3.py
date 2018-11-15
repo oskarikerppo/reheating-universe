@@ -27,9 +27,9 @@ l = m*math.pow(10.0,-3)
 #Integration settings
 #Limit for scipy.quad
 lmt = 1000000
-dvm = 1000000
-tolerance=1.48e-12
-rtolerance=1.48e-12
+dvm = 50
+tolerance=1.48e-08
+rtolerance=1.48e-08
 #Default tolerances
 #tol=1.48e-08 
 #rtol=1.48e-08
@@ -336,16 +336,16 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = 10**-7
-	min_mass = 10**-17
-	mass_points = np.linspace(min_mass, max_mass, 25)
+	max_mass = -7
+	min_mass = -17
+	mass_points = np.logspace(min_mass, max_mass, 40, endpoint=True, base=10)
 
 	min_lambda = 10**-3
 	max_lambda = 10**-1
 
-	min_b = 10**-3
-	max_b = 10**1
-	b_points = np.linspace(min_b, max_b, 25)
+	min_b = -3
+	max_b = 1
+	b_points = np.logspace(min_b, max_b, 40, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -356,6 +356,8 @@ def generate_datapoints():
 				for xi in [minimal_xi, conformal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
 	return data
+
+
 
 
 
@@ -370,4 +372,3 @@ if __name__ == "__main__":
 		sys.stderr.write('\rdone {0:%}'.format(float(i)/len(data)))
 	with open('results.pkl', 'wb') as f:
 		pickle.dump(results, f)
-	
