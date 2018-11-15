@@ -72,7 +72,7 @@ def create_Z(x, y, l, xi):
 	return Z, M
 
 
-Z, M = create_Z(X, Y, 10**-3, 1.0/6)
+Z, M = create_Z(X, Y, 10**-1, 1.0/6)
 
 '''
 X = X-np.min(X)
@@ -111,12 +111,12 @@ cbar2.ax.set_yticklabels(ticks_labels2)
 ax.set_title("Temperature as a function of mass and b")
 ax.set_xlabel("mass", fontsize=16)
 ax.set_ylabel("b", fontsize=16, rotation='horizontal')
-ax.set_xscale('log')
-ax.set_yscale('log')
+#ax.set_xscale('lin')
+#ax.set_yscale('lin')
 ax2.set_title("Matter and radiation dominated areas")
 ax2.set_xlabel("mass", fontsize=16)
 ax2.set_ylabel("b", fontsize=16, rotation='horizontal')
-ax2.set_xscale('log')
-ax2.set_yscale('log')
+#ax2.set_xscale('lin')
+#ax2.set_yscale('lin')
 
 plt.show()
