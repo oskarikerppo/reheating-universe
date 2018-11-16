@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle as pickle
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
@@ -12,7 +12,7 @@ temps= []
 for x in results:
 	temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1]])
 
-print len(temps)
+print(len(temps))
 mat_temps = []
 rad_temps = []
 
@@ -36,8 +36,6 @@ X, Y = np.meshgrid(mass_points, b_points)
 
 
 
-print X.shape
-print Y.shape
 
 def create_string_tick(x):
 	x = str(x)
