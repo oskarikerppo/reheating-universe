@@ -99,10 +99,10 @@ Y = Y/np.max(Y)
 
 
 fig, ax = plt.subplots()
-im = ax.imshow(Z, interpolation='None', cmap='rainbow',
+im = ax.imshow(Z, interpolation='bilinear', cmap='rainbow',
                origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
                ,vmin=np.min(Z), vmax=np.max(Z))
-ax.scatter(X, Y)
+#ax.scatter(X, Y)
 ticks=np.linspace(np.min(Z), np.max(Z), 6)
 ticks_labels = [create_string_tick(x) for x in ticks]
 cbar = fig.colorbar(im, ticks=ticks)
@@ -110,10 +110,10 @@ cbar.ax.set_yticklabels(ticks_labels)
 
 
 fig2, ax2 = plt.subplots()
-im2 = ax2.imshow(M, interpolation='None', cmap='rainbow',
+im2 = ax2.imshow(M, interpolation='bilinear', cmap='rainbow',
                origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
                ,vmin=0, vmax=1)
-ax2.scatter(X, Y)
+#ax2.scatter(X, Y)
 ticks2 = [0, 1]
 ticks_labels2 = ["Radiation", "Matter"]
 cbar2 = fig2.colorbar(im2, ticks=ticks2)
