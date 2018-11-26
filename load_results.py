@@ -10,9 +10,10 @@ with open('results.pkl', 'rb') as f:
 
 temps= []
 for x in results:
-	temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1]])
+	temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1]])
 
 print(len(temps))
+#print(temps)
 mat_temps = []
 rad_temps = []
 
@@ -64,6 +65,7 @@ def create_string_tick(x):
 
 def create_Z(x, y, l, xi):
 	Z = np.zeros((len(x), len(y)))
+	T = np.zeros((len(x), len(y)))
 	M = np.zeros((len(x), len(y)))
 	data = [h for h in temps if h[4] == xi and h[2] == l*h[1]]
 	#print max(data)
@@ -73,16 +75,17 @@ def create_Z(x, y, l, xi):
 			for k in range(len(data)):
 				if data[k][1] == x[i][j] and data[k][3] == y[i][j]:
 					Z[i][j] = data[k][0]
-					if data[k][-1]:
+					if data[k][-2]:
 						M[i][j] = 1
 					else:
 						M[i][j] = 0
+					T[i][j] = data[k][-1]
 					data.pop(k)
 					break
-	return Z, M
+	return Z, M, T
 
 
-Z, M = create_Z(X, Y, 10**-3, 1.0/6)
+Z, M, T = create_Z(X, Y, 10**-3, 1.0/6)
 
 '''
 X = X-np.min(X)
@@ -120,6 +123,17 @@ cbar2 = fig2.colorbar(im2, ticks=ticks2)
 cbar2.ax.set_yticklabels(ticks_labels2)
 
 
+fig3, ax3 = plt.subplots()
+im3 = ax3.imshow(T, interpolation='bilinear', cmap='rainbow',
+               origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
+               ,vmin=np.min(T), vmax=np.max(T))
+#ax.scatter(X, Y)
+ticks3=np.linspace(np.min(T), np.max(T), 6)
+ticks_labels3 = [create_string_tick(x) for x in ticks3]
+cbar3 = fig3.colorbar(im3, ticks=ticks3)
+cbar3.ax.set_yticklabels(ticks_labels3)
+
+
 ax.set_title("Temperature as a function of mass and b")
 ax.set_xlabel("mass", fontsize=16)
 ax.set_ylabel("b", fontsize=16, rotation='horizontal')
@@ -130,7 +144,11 @@ ax2.set_xlabel("mass", fontsize=16)
 ax2.set_ylabel("b", fontsize=16, rotation='horizontal')
 ax2.set_xscale('log')
 ax2.set_yscale('log')
-
+ax3.set_title("Age of universe at reheating time")
+ax3.set_xlabel("mass", fontsize=16)
+ax3.set_ylabel("b", fontsize=16, rotation='horizontal')
+ax3.set_xscale('log')
+ax3.set_yscale('log')
 
 
 
