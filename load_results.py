@@ -66,8 +66,8 @@ def create_Z(x, y, l, xi):
 	Z = np.zeros((len(x), len(y)))
 	M = np.zeros((len(x), len(y)))
 	data = [h for h in temps if h[4] == xi and h[2] == l*h[1]]
-	#print max(data)
-	#print min(data)
+	print(max(data))
+	print(min(data))
 	for i in tqdm(range(len(x))):
 		for j in tqdm(range(len(y))):
 			for k in range(len(data)):
@@ -82,7 +82,7 @@ def create_Z(x, y, l, xi):
 	return Z, M
 
 
-Z, M = create_Z(X, Y, 10**-3, 1.0/6)
+Z, M = create_Z(X, Y, 10**-3, 0.0/6)
 
 '''
 X = X-np.min(X)
@@ -99,7 +99,7 @@ Y = Y/np.max(Y)
 
 
 fig, ax = plt.subplots()
-im = ax.imshow(Z, interpolation='bilinear', cmap='rainbow',
+im = ax.imshow(Z, interpolation='Bilinear', cmap='rainbow',
                origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
                ,vmin=np.min(Z), vmax=np.max(Z))
 #ax.scatter(X, Y)
@@ -110,7 +110,7 @@ cbar.ax.set_yticklabels(ticks_labels)
 
 
 fig2, ax2 = plt.subplots()
-im2 = ax2.imshow(M, interpolation='bilinear', cmap='rainbow',
+im2 = ax2.imshow(M, interpolation='Bilinear', cmap='rainbow',
                origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
                ,vmin=0, vmax=1)
 #ax2.scatter(X, Y)
