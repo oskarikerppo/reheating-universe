@@ -69,7 +69,7 @@ def create_Z(x, y, l, xi):
 	T2 = np.zeros((len(x), len(y)))
 	T3 = np.zeros((len(x), len(y)))
 	M = np.zeros((len(x), len(y)))
-	data = [h for h in temps if h[4] == xi and h[2] == l*h[1]]
+	data = [h for h in temps if h[4] == xi and h[2] == l]
 	#print max(data)
 	#print min(data)
 	for i in tqdm(range(len(x))):
@@ -89,7 +89,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 1.0/6)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-12, 1.0/6)
 
 '''
 X = X-np.min(X)
