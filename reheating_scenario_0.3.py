@@ -365,7 +365,7 @@ def reheating_time_star(args):
 def generate_datapoints():
 	data = []
 
-	t_0 = 10**11
+	t_0 = 10**13
 	G_N = 1.0
 	plot = False
 
@@ -373,8 +373,7 @@ def generate_datapoints():
 	min_mass = -11
 	mass_points = np.logspace(min_mass, max_mass, 100, endpoint=True, base=10)
 
-	min_lambda = 10**-3
-	max_lambda = 10**1
+	lam = 10**min_mass*0.1
 
 	min_b = -2
 	max_b = 1
@@ -385,9 +384,9 @@ def generate_datapoints():
 
 	for m in mass_points:
 		for b in b_points:
-			for l in [10**-3, 10**-2, 10**-1]:
+			for l in [lam]:
 				for xi in [minimal_xi, conformal_xi]:
-					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
+					data.append((1.1*t_0, t_0, m, l, b, xi, G_N, plot))
 	return data
 
 
@@ -404,7 +403,7 @@ if __name__ == "__main__":
 		results.append(x)
 		sys.stderr.write('\rdone {0:%}'.format(float(i)/len(data)))
 	with open('results.pkl', 'wb') as f:
-		pickle.dump(results, f)
+		pickle.dump(results, f, protocol=2)
 
 '''
 d = generate_datapoints()
