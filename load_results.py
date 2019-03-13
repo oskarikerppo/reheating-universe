@@ -93,7 +93,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 1.0/6)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 0)
 
 '''
 X = X-np.min(X)

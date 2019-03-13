@@ -47,7 +47,7 @@ def create_Z(mass_points, l, xi, b):
 	return points
 
 #print(temps[0])
-points = create_Z(mass_points, 10**-3, 1.0/6, b_p)
+points = create_Z(mass_points, 10**-2, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points])
