@@ -33,6 +33,10 @@ print min(mat_temps)
 mass_points = list(set([x[1] for x in temps]))
 b_points = list(set([x[3] for x in temps])) 
 
+mass_points = sorted(mass_points)
+b_points = sorted(b_points)
+
+
 X, Y = np.meshgrid(mass_points, b_points)
 
 
