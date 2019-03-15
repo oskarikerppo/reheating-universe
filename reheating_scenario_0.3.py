@@ -369,15 +369,15 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -8
-	min_mass = -10
-	mass_points = np.logspace(min_mass, max_mass, 75, endpoint=True, base=10)
+	max_mass = -11
+	min_mass = -17
+	mass_points = np.logspace(min_mass, max_mass, 20, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 75, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 20, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
