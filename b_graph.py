@@ -1,9 +1,12 @@
 import pickle as pickle
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 from tqdm import tqdm
 import time
+
+matplotlib.rc('text', usetex = True)
 
 with open('results.pkl', 'rb') as f:
 	results = pickle.load(f)
@@ -47,12 +50,26 @@ def create_Z(mass_points, l, xi, b):
 	return points
 
 #print(temps[0])
+
+points = create_Z(mass_points, 10**-1, 1/6, b_p)
+print(points)
+print (b_p)
+plt.plot([p[1] for p in points], [p[0] for p in points], "b-")
+
 points = create_Z(mass_points, 10**-2, 1/6, b_p)
 print(points)
 print (b_p)
-plt.plot([p[1] for p in points], [p[0] for p in points])
-plt.xlabel("mass")
-plt.ylabel("temperature")
+plt.plot([p[1] for p in points], [p[0] for p in points], "g--")
+
+points = create_Z(mass_points, 10**-3, 1/6, b_p)
+print(points)
+print (b_p)
+plt.plot([p[1] for p in points], [p[0] for p in points], "r:")
+
+        
+plt.xlabel('$m$', fontsize=16)
+plt.ylabel('$T_{rh}$', rotation='horizontal', fontsize=16)
 plt.xscale("log")
-plt.title("Graph with b equal to {}".format("%.2f" % b_p))
+plt.yscale("log")
+plt.title("")
 plt.show()

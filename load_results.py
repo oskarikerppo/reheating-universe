@@ -1,9 +1,13 @@
 import pickle as pickle
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 from tqdm import tqdm
 import time
+
+
+matplotlib.rc('text', usetex = True)
 
 with open('results.pkl', 'rb') as f:
 	results = pickle.load(f)
@@ -43,27 +47,28 @@ X, Y = np.meshgrid(mass_points, b_points)
 
 
 def create_string_tick(x):
-	x = str(x)
-	tick = ""
-	dot_reached = False
-	num_of_decimals = 2
-	current_decimals = 0
-	e_reached = False
-	for c in x:
-		if not dot_reached and c != ".":
-			tick += c
-		elif c == ".":
-			tick += "."
-			dot_reached = True
-		elif dot_reached and current_decimals < num_of_decimals:
-			tick += c
-			current_decimals += 1
-		elif c == "e":
-			tick += c
-			e_reached = True
-		elif e_reached:
-			tick += c
-	return tick
+        x = "{:.2e}".format(x)
+        #x = str(x)
+        tick = ""
+        dot_reached = False
+        num_of_decimals = 2
+        current_decimals = 0
+        e_reached = False
+        for c in x:
+                if not dot_reached and c != ".":
+                        tick += c
+                elif c == ".":
+                        tick += "."
+                        dot_reached = True
+                elif dot_reached and current_decimals < num_of_decimals:
+                        tick += c
+                        current_decimals += 1
+                elif c == "e":
+                        tick += c
+                        e_reached = True
+                elif e_reached:
+                        tick += c
+        return tick
 
 
 
@@ -162,9 +167,11 @@ cbar5 = fig5.colorbar(im5, ticks=ticks5)
 cbar5.ax.set_yticklabels(ticks_labels5)
 
 
-ax.set_title("Temperature as a function of mass and b")
-ax.set_xlabel("mass", fontsize=16)
-ax.set_ylabel("b", fontsize=16, rotation='horizontal')
+
+
+ax.set_title("")
+ax.set_xlabel('$m$', fontsize=16)
+ax.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax.set_xscale('log')
 ax.set_yscale('log')
 ax2.set_title("Matter and radiation dominated areas")
@@ -184,9 +191,9 @@ ax4.set_ylabel("b", fontsize=16, rotation='horizontal')
 ax4.set_xscale('log')
 ax4.set_yscale('log')
 
-ax5.set_title("Time of transition to matter dominance")
-ax5.set_xlabel("mass", fontsize=16)
-ax5.set_ylabel("b", fontsize=16, rotation='horizontal')
+ax5.set_title("")
+ax5.set_xlabel('$m$', fontsize=16)
+ax5.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax5.set_xscale('log')
 ax5.set_yscale('log')
 
