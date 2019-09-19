@@ -365,27 +365,28 @@ def reheating_time_star(args):
 def generate_datapoints():
 	data = []
 
-	t_0 = 10**11
+	t_0 = 10**10
 	G_N = 1.0
 	plot = False
 
-	max_mass = -11
-	min_mass = -17
-	mass_points = np.logspace(min_mass, max_mass, 20, endpoint=True, base=10)
+	max_mass = -9
+	min_mass = -11
+	mass_points = np.logspace(min_mass, max_mass, 15, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 20, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 15, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
+	other = 1.0/8
 
 	for m in mass_points:
 		for b in b_points:
 			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [minimal_xi, conformal_xi]:
+				for xi in [other]:
 					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
 	return data
 
