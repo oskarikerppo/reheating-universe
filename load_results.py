@@ -9,14 +9,16 @@ import time
 
 matplotlib.rc('text', usetex = True)
 
-with open('results.pkl', 'rb') as f:
+with open('results_1.pkl', 'rb') as f:
 	results = pickle.load(f)
 
 temps= []
 for x in results:
-	temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], x[1][3][1]])
+  try:
+    temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], x[1][3][1]])
+  except:
+    temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], np.nan])
 
-print(len(temps))
 #print(temps)
 mat_temps = []
 rad_temps = []
@@ -42,6 +44,7 @@ b_points = sorted(b_points)
 
 
 X, Y = np.meshgrid(mass_points, b_points)
+#Y = np.transpose(Y)
 
 
 
@@ -98,7 +101,11 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-1, 1/6)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-1, 0)
+
+print(np.max(Z))
+print(np.min(Z))
+
 
 '''
 X = X-np.min(X)
@@ -115,9 +122,7 @@ Y = Y/np.max(Y)
 
 
 fig, ax = plt.subplots()
-im = ax.imshow(Z, interpolation='bilinear', cmap='rainbow',
-               origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
-               ,vmin=np.min(Z), vmax=np.max(Z))
+im = ax.pcolor(X, Y, Z, cmap='jet', vmin=np.min(Z), vmax=np.max(Z))
 #ax.scatter(X, Y)
 ticks=np.linspace(np.min(Z), np.max(Z), 6)
 ticks_labels = [create_string_tick(x) for x in ticks]
@@ -126,9 +131,7 @@ cbar.ax.set_yticklabels(ticks_labels)
 
 
 fig2, ax2 = plt.subplots()
-im2 = ax2.imshow(M, interpolation='bilinear', cmap='rainbow',
-               origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
-               ,vmin=0, vmax=1)
+im2 = ax2.pcolor(X, Y, M, cmap='jet',vmin=0, vmax=1)
 #ax2.scatter(X, Y)
 ticks2 = [0, 1]
 ticks_labels2 = ["Radiation", "Matter"]
@@ -137,9 +140,7 @@ cbar2.ax.set_yticklabels(ticks_labels2)
 
 
 fig3, ax3 = plt.subplots()
-im3 = ax3.imshow(T, interpolation='bilinear', cmap='rainbow',
-               origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
-               ,vmin=np.min(T), vmax=np.max(T))
+im3 = ax3.pcolor(X, Y, T, cmap='jet', vmin=np.min(T), vmax=np.max(T))
 #ax.scatter(X, Y)
 ticks3=np.linspace(np.min(T), np.max(T), 6)
 ticks_labels3 = [create_string_tick(x) for x in ticks3]
@@ -147,38 +148,44 @@ cbar3 = fig3.colorbar(im3, ticks=ticks3)
 cbar3.ax.set_yticklabels(ticks_labels3)
 
 fig4, ax4 = plt.subplots()
-im4 = ax4.imshow(T2, interpolation='bilinear', cmap='rainbow',
-               origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
-               ,vmin=np.min(T2), vmax=np.max(T2))
+im4 = ax4.pcolor(X, Y, T2, cmap='jet',vmin=np.min(T2), vmax=np.max(T2))
 #ax.scatter(X, Y)
 ticks4=np.linspace(np.min(T2), np.max(T2), 6)
 ticks_labels4 = [create_string_tick(x) for x in ticks4]
 cbar4 = fig4.colorbar(im4, ticks=ticks4)
 cbar4.ax.set_yticklabels(ticks_labels4)
+print("NOW MIN AND MAX")
+print(np.nanmin(T3))
+print(np.nanmax(T3))
 
+c_cmap =matplotlib.cm.jet
+#c_cmap.set_bad('black')
+#m_array = np.ma.array(T3, mask=np.isnan(T3))
 fig5, ax5 = plt.subplots()
-im5 = ax5.imshow(T3, interpolation='bilinear', cmap='rainbow',
-               origin='lower', aspect='auto', extent=[np.min(X), np.max(X), np.min(Y), np.max(Y)]
-               ,vmin=np.min(T3), vmax=np.max(T3))
-#ax.scatter(X, Y)
-ticks5=np.linspace(np.min(T3), np.max(T3), 6)
+im5 = ax5.pcolor(X, Y, T3, cmap=c_cmap,vmin=np.nanmin(T3), vmax=np.nanmax(T3))
+#im5 = ax5.scatter(X, Y, c=T3, s=T3 ,cmap=c_cmap, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
+#ax5.scatter(X, Y, c=T3, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
+ticks5=np.linspace(np.nanmin(T3), np.nanmax(T3), 10)
 ticks_labels5 = [create_string_tick(x) for x in ticks5]
 cbar5 = fig5.colorbar(im5, ticks=ticks5)
 cbar5.ax.set_yticklabels(ticks_labels5)
 
+#print(m_array)
 
-
-
-ax.set_title("")
+#Temperature as a function of mass and b
+ax.set_title("Reheating Temperature")
 ax.set_xlabel('$m$', fontsize=16)
 ax.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax.set_xscale('log')
 ax.set_yscale('log')
+
 ax2.set_title("Matter and radiation dominated areas")
 ax2.set_xlabel("mass", fontsize=16)
 ax2.set_ylabel("b", fontsize=16, rotation='horizontal')
 ax2.set_xscale('log')
 ax2.set_yscale('log')
+
+#Age of universe at reheating time
 ax3.set_title("")
 ax3.set_xlabel('$m$', fontsize=16)
 ax3.set_ylabel('$b$', fontsize=16, rotation='horizontal')
@@ -191,6 +198,7 @@ ax4.set_ylabel("b", fontsize=16, rotation='horizontal')
 ax4.set_xscale('log')
 ax4.set_yscale('log')
 
+#Time of transition to matter dominance
 ax5.set_title("")
 ax5.set_xlabel('$m$', fontsize=16)
 ax5.set_ylabel('$b$', fontsize=16, rotation='horizontal')

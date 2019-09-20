@@ -52,7 +52,7 @@ def timing(f):
 def Gamma_phi(t, m, b):
 	airy_param = -math.pow(3.0*m*t/2.0, 2.0/3.0)
 	ai, aip, bi, bip = special.airy(airy_param)	
-	return math.pow(3.0/2.0, 4.0/3.0)*math.pow(m, 13.0/3.0)*math.pow(b, 4.0)*math.pow(t, 4.0/3.0)*(math.pow(ai, 2) + math.pow(bi, 2))/32.0
+	return 3.0*math.pow(m*b, 16.0/3.0)*t*(math.pow(ai, 2) + math.pow(bi, 2))/(32.0*b)
 
 #Differential decay rate for massless particles
 def Gamma_psi(t, m, a, l):
@@ -365,19 +365,19 @@ def reheating_time_star(args):
 def generate_datapoints():
 	data = []
 
-	t_0 = 10**10
+	t_0 = 10**11
 	G_N = 1.0
 	plot = False
 
-	max_mass = -9
-	min_mass = -11
-	mass_points = np.logspace(min_mass, max_mass, 15, endpoint=True, base=10)
+	max_mass = -8.0
+	min_mass = -9.0
+	mass_points = np.logspace(min_mass, max_mass, 50, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 15, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 50, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -386,7 +386,7 @@ def generate_datapoints():
 	for m in mass_points:
 		for b in b_points:
 			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [other]:
+				for xi in [minimal_xi, conformal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
 	return data
 
@@ -407,7 +407,11 @@ if __name__ == "__main__":
 		pickle.dump(results, f, protocol=2)
 
 '''
-d = generate_datapoints()
-print(d[0])
-print reheating_time_star(d[-1])
+data = generate_datapoints()
+print(data[0])
+
+print(reheating_time_star((110000000000, 100000000000, 1e-7, 1.0000000000000002e-8, 0.2, 0.0, 1.0, True)))
+
+
+#(t, t_0, m, l, b, xi, G_N, plot)
 '''

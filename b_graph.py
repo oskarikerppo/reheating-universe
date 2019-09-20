@@ -14,7 +14,10 @@ with open('results.pkl', 'rb') as f:
 
 temps= []
 for x in results:
-	temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], x[1][3][1]])
+	try:
+		temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], x[1][3][1]])
+	except:
+		temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], np.nan])
 
 print(len(temps))
 #print(temps)
@@ -51,17 +54,17 @@ def create_Z(mass_points, l, xi, b):
 
 #print(temps[0])
 
-points = create_Z(mass_points, 10**-1, 1/6, b_p)
+points = create_Z(mass_points, 10**-1, 0/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "b-")
 
-points = create_Z(mass_points, 10**-2, 1/6, b_p)
+points = create_Z(mass_points, 10**-2, 0/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "g--")
 
-points = create_Z(mass_points, 10**-3, 1/6, b_p)
+points = create_Z(mass_points, 10**-3, 0/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "r:")
