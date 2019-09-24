@@ -9,7 +9,7 @@ import time
 
 matplotlib.rc('text', usetex = True)
 
-with open('results_1.pkl', 'rb') as f:
+with open('results2.pkl', 'rb') as f:
 	results = pickle.load(f)
 
 temps= []

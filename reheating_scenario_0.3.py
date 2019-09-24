@@ -369,8 +369,8 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -8.0
-	min_mass = -9.0
+	max_mass = -8.5
+	min_mass = -9.5
 	mass_points = np.logspace(min_mass, max_mass, 50, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
