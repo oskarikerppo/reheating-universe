@@ -9,7 +9,7 @@ import time
 
 matplotlib.rc('text', usetex = True)
 
-with open('results_1.pkl', 'rb') as f:
+with open('results.pkl', 'rb') as f:
 	results = pickle.load(f)
 
 temps= []
@@ -82,8 +82,8 @@ def create_Z(x, y, l, xi):
 	T3 = np.zeros((len(x), len(y)))
 	M = np.zeros((len(x), len(y)))
 	data = [h for h in temps if h[4] == xi and h[2] == l*h[1]]
-	print(max(data))
-	print(min(data))
+	#print(max(data))
+	#print(min(data))
 	for i in tqdm(range(len(x))):
 		for j in tqdm(range(len(y))):
 			for k in range(len(data)):
@@ -101,7 +101,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 0)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-1, 1/6)
 
 print(np.max(Z))
 print(np.min(Z))
