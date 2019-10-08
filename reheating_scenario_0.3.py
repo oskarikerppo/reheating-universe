@@ -4,7 +4,7 @@ from __future__ import division
 import math
 import numpy as np
 from scipy import special
-import scipy.integrate as integrate
+from scipy import integrate
 from scipy.optimize import fsolve, minimize
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ import sys
 t_0 = 10**11
 t, m, l, b, xi = (t_0*1.1, 10**-6, 10**-19, 10**2, 0/6)
 G_N = 1.0
-l = m*math.pow(10.0,-3)
+l = m*10.0**-3
 
 
 #Integration settings
@@ -33,6 +33,12 @@ rtolerance=1.48e-08
 #Default tolerances
 #tol=1.48e-08 
 #rtol=1.48e-08
+
+#Tolerances for quad
+eabs=1.49e-08
+erel=1.49e-08
+lmt=10000
+
 
 #Resolution for figures
 resolution = 50
@@ -50,49 +56,50 @@ def timing(f):
 
 #creation rate for massive particles
 def Gamma_phi(t, m, b):
-	airy_param = -math.pow(3.0*m*t/2.0, 2.0/3.0)
+	airy_param = -(3*m*t/2)**(2/3)
 	ai, aip, bi, bip = special.airy(airy_param)	
-	return 3.0*math.pow(m*b, 16.0/3.0)*t*(math.pow(ai, 2) + math.pow(bi, 2))/(32.0*b)
+	return 3*((m*b)**(16/3))*t*(ai**2 + bi**2)/(32*b)
 
 #Differential decay rate for massless particles
 def Gamma_psi(t, m, a, l):
-	return math.pow(l, 2.0)*t*(math.pow(special.jv(a, m*t), 2.0) + math.pow(special.yv(a, m*t), 2.0))/(32.0)
+	return (l**2)*t*((special.jv(a, m*t)**2) + (special.yv(a, m*t)**2))/(32)
 
 #Index for Hankel functions
 def alpha(n, xi):
-	return math.sqrt(1.0 - n*(n - 2.0)*(6.0*xi - 1.0))/(2.0 + n)
+	return ((1 - n*(n - 2)*(6*xi - 1))**(1/2))/(2 + n)
 
 def bessel(t, m, a, l):
-	return math.pow(l*t, 2.0)*(math.pow(special.jv(a, m*t), 2.0) - special.jv(a-1, m*t)*special.jv(a+1, m*t) - special.yv(a+1, m*t)*special.yv(a-1, m*t) + math.pow(special.yv(a, m*t), 2.0))/64.0 
+	return ((l*t)**2.0)*((special.jv(a, m*t)**2) - special.jv(a-1, m*t)*special.jv(a+1, m*t) - special.yv(a+1, m*t)*special.yv(a-1, m*t) + (special.yv(a, m*t)**2))/64 
  
 def f(t, t_0, n, xi, m, l):
 	a = alpha(n, xi)
 	return bessel(t, m, a, l)- bessel(t_0, m, a, l)
 
 def scale_factor(t):
-	return math.pow(t, 1.0/3.0)
+	return t**(1/3)
 
 #Energy density for massive particles
 def rho_phi(t, t_0, n, xi, m, l, b):
-	return math.pow(scale_factor(t), -3.0)*math.exp(-f(t, t_0, n, xi, m, l))*integrate.romberg(lambda x: math.pow(scale_factor(x), 3.0)*Gamma_phi(x, m, b)*math.exp(f(x, t_0, n, xi, m, l)), t_0, t, divmax=dvm, tol=tolerance, rtol=rtolerance)
+	return (scale_factor(t)**(-3))*np.exp(-f(t, t_0, n, xi, m, l))*integrate.quad(lambda x: (scale_factor(x)**3)*Gamma_phi(x, m, b)*np.exp(f(x, t_0, n, xi, m, l)), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
+
 
 #Energy density for massless particles
 def rho_psi(t, t_0, n, xi, m, l, b):
 	a = alpha(n, xi)
-	return math.pow(scale_factor(t), -4.0)*integrate.romberg(lambda x: Gamma_psi(x, m, a, l)*rho_phi(x, t_0, n, xi, m, l, b)*math.pow(scale_factor(x),4.0), t_0, t, divmax=dvm, tol=tolerance, rtol=rtolerance)
+	return (scale_factor(t)**(-4))*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi(x, t_0, n, xi, m, l, b)*(scale_factor(x)**4), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
 
 #Energy density of stiff matter
 def rho_stiff(t, G_N):
-	return 1.0 / (24.0*math.pi*G_N*math.pow(t, 2.0))
+	return 1 / (24*np.pi*G_N*(t**2))
 
 def rho_stiff_mat(t, t_0, G_N):
-	return math.pow(t_0, 4.0) / (24.0*math.pi*G_N*math.pow(t_0, 2.0)*math.pow(t, 4.0))
+	return (t_0**4) / (24*np.pi*G_N*(t_0**2)*(t**4))
 
 def rho_stiff_rad(t, t_0, t_1, G_N):
-	return math.pow(t_0, 4.0) * math.pow(t_1, 3.0) / (24.0*math.pi*G_N*math.pow(t_0, 2.0)*math.pow(t_1, 4.0)*math.pow(t, 3.0))
+	return (t_0**4) * (t_1**3) / (24*np.pi*G_N*(t_0**2)*(t_1**4)*(t**3))
 
 def rho_stiff_rad_no_mat(t, t_0, G_N):
-	return math.pow(t_0, 3.0) / (24.0*math.pi*G_N*math.pow(t_0, 2.0)*math.pow(t, 3.0))
+	return (t_0**3) / (24*np.pi*G_N*(t_0**2)*(t**3))
 
 
 
@@ -102,10 +109,10 @@ def rho_stiff_rad_no_mat(t, t_0, G_N):
 ################################################# UINVERSE ENDS UP IN MATTER DOMINATED ERA ################################################# 
 
 def matter_minus_stiff(t, t_0, n, xi, m, l, b, G_N):
-	return float(rho_phi(t, t_0, n, xi, m, l, b) - rho_stiff(t, G_N))
+	return float(rho_stiff(t, G_N) - rho_phi(t, t_0, n, xi, m, l, b))
 
 def rad_minus_stiff(t, t_0, n, xi, m, l, b, G_N):
-	return float(rho_psi(t, t_0, n, xi, m, l, b) - rho_stiff(t, G_N))
+	return float(rho_stiff(t, G_N) - rho_psi(t, t_0, n, xi, m, l, b))
 
 def eq_time(t, t_0, n, xi, m, l, b, G_N):
 	'''
@@ -148,12 +155,12 @@ def eq_time2(t, t_0, n, xi, m, l, b, G_N):
 ############### MATTER DOMINATED PHASE ##################
 #Energy density of matter
 def rho_phi_mat(t, n, xi, m, l, eq_time, rho_eq):
-	return math.pow(math.pow(eq_time/t, 2.0/3.0), 3.0)*(math.exp(-f(t, eq_time, n, xi, m, l)) * rho_eq)
+	return (((eq_time/t)**(2/3))**3)*(np.exp(-f(t, eq_time, n, xi, m, l)) * rho_eq)
 
 #Energy density of radiation
 def rho_psi_mat(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq):
 	a = alpha(n, xi)
-	return math.pow(1.0 / math.pow(t, 2.0/3.0), 4.0)*integrate.romberg(lambda x: Gamma_psi(x, m, a, l)*rho_phi_mat(x, n, xi, m, l, eq_time, rho_eq)*math.pow(math.pow(x, 2.0/3.0), 4.0), eq_time, t, divmax=dvm, tol=tolerance, rtol=rtolerance) + rho_psi_eq*math.pow(math.pow(eq_time/t, 2.0/3.0), 4.0)
+	return ((1/(t**(2/3)))**4)*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi_mat(x, n, xi, m, l, eq_time, rho_eq)*((x**(2/3))**4), eq_time, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + rho_psi_eq*(eq_time/t)**(2/3)**4
 
 def matter_minus_rad(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq):
 	return rho_phi_mat(t, n, xi, m, l, eq_time, rho_eq) - rho_psi_mat(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq)
@@ -183,15 +190,15 @@ def eq_tau(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq):
 
 #Energy density of radiation dominated era
 def rho_phi_rad(t, n, xi, m, l, eq_tau, rho_tau):
-	return math.pow(math.pow(eq_tau/t, 1.0/2.0), 3.0)*(math.exp(-f(t, eq_tau, n, xi, m, l)) * rho_tau)
+	return (((eq_tau/t)**(1/2))**3)*(np.exp(-f(t, eq_tau, n, xi, m, l)) * rho_tau)
 
 def rho_psi_rad(t, n, xi, m, l, eq_tau, rho_tau, psi_tau):
 	a = alpha(n, xi)
-	return math.pow(math.pow(1.0/t, 1.0/2.0), 4.0)*integrate.romberg(lambda x: Gamma_psi(x, m, a, l)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance) + psi_tau*math.pow(math.pow(eq_tau/t, 1.0/2.0), 4.0)
+	return ((1/t)**2)*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + psi_tau*((eq_tau/t)**2)
 
 def d_rho_psi_rad(t, n, xi, m, l, eq_tau, rho_tau, psi_tau):
 	a = alpha(n, xi)
-	return -2.0*integrate.romberg(lambda x: Gamma_psi(x, m, a, l)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*math.pow(math.pow(x, 1.0/2.0), 4.0), eq_tau, t, divmax=dvm, tol=tolerance, rtol=rtolerance)/math.pow(t, 3.0) + Gamma_psi(t, m, a, l)*rho_phi_rad(t, n, xi, m, l, eq_tau, rho_tau) - 2*psi_tau*math.pow(eq_tau, 2.0)*math.pow(1.0/t, 3.0)
+	return -2*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]/(t**3) + Gamma_psi(t, m, a, l)*rho_phi_rad(t, n, xi, m, l, eq_tau, rho_tau) - 2*psi_tau*(eq_tau**2)/(t**3)
 
 def r_time(t, n, xi, m, l, eq_tau, rho_tau, psi_tau):
 	#First calculate derivative of radiation density at equal time
@@ -233,7 +240,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		#print rho_psi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init)
 		if plot:
 			plt.figure("Stiff matter dominated era")
-			stiff_era = np.linspace(t_0, etime_rad, resolution) # 100 linearly spaced numbers
+			stiff_era = np.linspace(t_0, etime_rad*1.05, resolution) # 100 linearly spaced numbers
 			mat = np.array([rho_phi(z, t_0, 1, xi, m, l, b) for z in stiff_era])
 			rad = np.array([rho_psi(z, t_0, 1, xi, m, l, b) for z in stiff_era])
 			stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
@@ -246,9 +253,8 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		#Radiation dominated era begins, n equals 2
 		n = 2
 		
-		
 		#Sove for the reheating temperature
-		reh_time = r_time(etime_rad*1.1, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init)
+		reh_time = r_time(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init)
 		#print reh_time
 		max_density = rho_psi_rad(reh_time, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init)
 		#print max_density
@@ -263,7 +269,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 
 		if plot:
 			plt.figure("Radiation dominated era")
-			rad_era = np.linspace(etime_rad, reh_time*1.5, resolution) # 100 linearly spaced numbers
+			rad_era = np.linspace(etime_rad, reh_time*1.05, resolution) # 100 linearly spaced numbers
 			mat = np.array([rho_phi_rad(z, n, xi, m, l, etime_rad, phi_rad_init) for z in rad_era])
 			rad = np.array([rho_psi_rad(z, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
 			d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
@@ -273,10 +279,13 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 			plt.plot(rad_era, rad, 'y-')
 			plt.plot(rad_era, d_rad, 'g-')
 			plt.plot(rad_era, stiff, 'r-')
-			#print rad
-			#print d_rad
+			#print(rad)
+			#print(reh_time)
+			#print(d_rho_psi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init))
+			#print(d_rho_psi_rad(reh_time, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init))
+			#print(d_rad)
 			plt.show()
-		return [math.pow(max_density,1.0/4.0) ,(max_density, reh_time), (psi_rad_init, etime_rad), False]
+		return [max_density**(1/4) ,(max_density, reh_time), (psi_rad_init, etime_rad), False]
 
 	else:
 		#print "Transition from stiff to matter dominated era"
@@ -288,7 +297,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		#print etime_mat
 		if plot:
 			plt.figure("Stiff matter dominated era")
-			stiff_era = np.linspace(t_0, etime_mat*1.1, resolution) # 100 linearly spaced numbers
+			stiff_era = np.linspace(t_0, etime_mat, resolution) # 100 linearly spaced numbers
 			mat = np.array([rho_phi(z, t_0, 1, xi, m, l, b) for z in stiff_era])
 			rad = np.array([rho_psi(z, t_0, 1, xi, m, l, b) for z in stiff_era])
 			stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
@@ -309,7 +318,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		#Matter dominated era begins, and n is now 4
 		n = 4
 
-		etime_rad = eq_tau(etime_mat*1.1, n, xi, m, l, etime_mat, psi_1, phi_1)
+		etime_rad = eq_tau(etime_mat, n, xi, m, l, etime_mat, psi_1, phi_1)
 		#print etime_rad
 		phi_2 = rho_phi_mat(etime_rad, n, xi, m, l, etime_mat, phi_1)
 		psi_2 = rho_psi_mat(etime_rad, n, xi, m, l, etime_mat, psi_1, phi_1)
@@ -331,7 +340,8 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		
 		
 		#Sove for the reheating temperature
-		reh_time = r_time(etime_rad*1.1, n, xi, m, l, etime_rad, phi_2, psi_2)
+		reh_time = r_time(etime_rad, n, xi, m, l, etime_rad, phi_2, psi_2)
+		#print(reh_time)
 		#print reh_time
 		max_density = rho_psi_rad(reh_time, n, xi, m, l, etime_rad, phi_2, psi_2)
 		#print max_density
@@ -341,7 +351,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 
 		if plot:
 			plt.figure("Radiation dominated era")
-			rad_era = np.linspace(etime_rad, reh_time*1.5, resolution) # 100 linearly spaced numbers
+			rad_era = np.linspace(etime_rad, reh_time*1.05, resolution) # 100 linearly spaced numbers
 			mat = np.array([rho_phi_rad(z, n, xi, m, l, etime_rad, phi_2) for z in rad_era])
 			rad = np.array([rho_psi_rad(z, n, xi, m, l, etime_rad, phi_2, psi_2) for z in rad_era])
 			d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, etime_rad, phi_2, psi_2) for z in rad_era])
@@ -351,11 +361,12 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 			plt.plot(rad_era, mat, 'b-')
 			plt.plot(rad_era, rad, 'y-')
 			plt.plot(rad_era, stiff, 'r-')
+			plt.plot(rad_era, d_rad, 'g-')
 
 			plt.show()
 		#print max_density
 		#print math.pow(max_density, 1.0/4.0)
-		return [math.pow(max_density, 1.0/4.0) ,(max_density, reh_time), (psi_2, etime_rad), (phi_1 ,etime_mat), True]
+		return [max_density**(1/4) ,(max_density, reh_time), (psi_2, etime_rad), (phi_1 ,etime_mat), True]
 
 
 def reheating_time_star(args):
@@ -369,8 +380,8 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -8
-	min_mass = -11
+	max_mass = -7
+	min_mass = -14
 	mass_points = np.logspace(min_mass, max_mass, 200, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
@@ -386,14 +397,14 @@ def generate_datapoints():
 	for m in mass_points:
 		for b in b_points:
 			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [conformal_xi]:
+				for xi in [conformal_xi, minimal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
 	return data
 
 
 
 
-'''
+
 if __name__ == "__main__":
 	start = time.time()
 	plot = False
@@ -407,13 +418,17 @@ if __name__ == "__main__":
 		pickle.dump(results, f, protocol=2)
 
 '''
+np.seterr(all='raise')
+
 data = generate_datapoints()
 print(data[0])
 
-m = 10**-13
+m = 10**-14
 t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, 10**-1 * m, 10**-1, 1/6, 1.0, True)
 
 print(reheating_time_star((t, t_0, m, l, b, xi, G_N, plot)))
 
 
 #(t, t_0, m, l, b, xi, G_N, plot)
+#d_rho_psi_rad(1825248503062.4495, 2, 1/6, 10**-8, 0.1*10**-8, 1637640431451.402, rho_tau, psi_tau)
+'''
