@@ -326,7 +326,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		#print psi_2
 		if plot:
 			plt.figure("Matter dominated era")
-			mat_era = np.linspace(etime_mat, etime_rad*1.1, resolution) # 100 linearly spaced numbers
+			mat_era = np.linspace(etime_mat, etime_rad, resolution) # 100 linearly spaced numbers
 			mat = np.array([rho_phi_mat(z, n, xi, m, l, etime_mat, phi_1) for z in mat_era])
 			rad = np.array([rho_psi_mat(z, n, xi, m, l, etime_mat, psi_1, phi_1) for z in mat_era])
 			stiff = np.array([rho_stiff_mat(z, etime_mat, G_N) for z in mat_era])
@@ -357,7 +357,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 			d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, etime_rad, phi_2, psi_2) for z in rad_era])
 			#print d_rad
 			stiff = np.array([rho_stiff_rad(z, etime_mat, etime_rad, G_N) for z in rad_era])
-			plt.ylim(0, max(rad)*1.1)
+			plt.ylim(0, max(rad)*1.01)
 			plt.plot(rad_era, mat, 'b-')
 			plt.plot(rad_era, rad, 'y-')
 			plt.plot(rad_era, stiff, 'r-')
@@ -380,15 +380,15 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -7
-	min_mass = -14
-	mass_points = np.logspace(min_mass, max_mass, 200, endpoint=True, base=10)
+	max_mass = -8
+	min_mass = -11
+	mass_points = np.logspace(min_mass, max_mass, 15, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 200, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 15, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -423,12 +423,29 @@ np.seterr(all='raise')
 data = generate_datapoints()
 print(data[0])
 
-m = 10**-14
-t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, 10**-1 * m, 10**-1, 1/6, 1.0, True)
+m = 10**-9
+t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-2) * m, 2, 0, 1.0, True)
 
 print(reheating_time_star((t, t_0, m, l, b, xi, G_N, plot)))
-
+'''
 
 #(t, t_0, m, l, b, xi, G_N, plot)
 #d_rho_psi_rad(1825248503062.4495, 2, 1/6, 10**-8, 0.1*10**-8, 1637640431451.402, rho_tau, psi_tau)
+'''
+stiff_era1 = np.linspace(t_0, t_0*10, 100)
+mat_set1 = [rho_phi(x, t_0, 1, 1/6, 10**-9, (10**-9)*(10**-2), 2) for x in stiff_era1]
+plt.plot(stiff_era1, mat_set1, 'g-')
+
+stiff_era2 = np.linspace(t_0, t_0*10, 100)
+mat_set2 = [rho_phi(x, t_0, 1, 1/6, 5*(10**-9), ((5*10**-9))*(10**-2), 2) for x in stiff_era2]
+plt.plot(stiff_era2, mat_set2, 'b-')
+
+stiff_era3 = np.linspace(t_0, t_0*10, 100)
+mat_set3 = [rho_phi(x, t_0, 1, 1/6, 2*(10**-8), (2*(10**-8))*(10**-2), 2) for x in stiff_era3]
+plt.plot(stiff_era3, mat_set3, 'y-')
+
+
+
+plt.show()
+
 '''
