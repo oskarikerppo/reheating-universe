@@ -49,9 +49,9 @@ def timing(f):
 
 #creation rate for massive particles
 def Gamma_phi(t, m, b):
-	airy_param = -(3*m*t/2.0)**(2/3.0)
+	airy_param = -((3*m*t/2.0)**(2/3.0))
 	ai, aip, bi, bip = special.airy(airy_param)	
-	return 3*((m*b)**(16/3.0))*t*(ai**2 + bi**2)/(32.0*b)
+	return 3*((m*b)**(13/3.0))*t*(ai**2 + bi**2)/(32.0*b)
 
 #Differential decay rate for massless particles
 def Gamma_psi(t, m, a, l):
@@ -320,7 +320,7 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 		#print psi_2
 		if plot:
 			plt.figure("Matter dominated era")
-			mat_era = np.linspace(etime_mat, etime_rad*1.1, resolution) # 100 linearly spaced numbers
+			mat_era = np.linspace(etime_mat, etime_rad*1, resolution) # 100 linearly spaced numbers
 			mat = np.array([rho_phi_mat(z, n, xi, m, l, etime_mat, phi_1) for z in mat_era])
 			rad = np.array([rho_psi_mat(z, n, xi, m, l, etime_mat, psi_1, phi_1) for z in mat_era])
 			stiff = np.array([rho_stiff_mat(z, etime_mat, G_N) for z in mat_era])
@@ -373,15 +373,15 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -7
-	min_mass = -14
-	mass_points = np.logspace(min_mass, max_mass, 200, endpoint=True, base=10)
+	max_mass = -9
+	min_mass = -17
+	mass_points = np.logspace(min_mass, max_mass, 100, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 200, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 100, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -390,7 +390,7 @@ def generate_datapoints():
 	for m in mass_points:
 		for b in b_points:
 			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [minimal_xi, conformal_xi, other]:
+				for xi in [conformal_xi, minimal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, b, xi, G_N, plot))
 	return data
 
@@ -414,8 +414,8 @@ if __name__ == "__main__":
 data = generate_datapoints()
 print(data[0])
 
-m = 10**-14
-t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-3) * m, 10**1, 1/6, 1.0, True)
+m = 10**-10
+t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-3) * m, 10**-1, 1/6, 1.0, True)
 
 print(reheating_time_star((t, t_0, m, l, b, xi, G_N, plot)))
 
