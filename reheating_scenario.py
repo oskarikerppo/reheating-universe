@@ -415,7 +415,7 @@ data = generate_datapoints()
 print(data[0])
 
 m = 10**-10
-t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-3) * m, 10**-1, 1/6, 1.0, True)
+t, t_0, m, l, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-3) * m, 10**-1, 0/6, 1.0, True)
 
 print(reheating_time_star((t, t_0, m, l, b, xi, G_N, plot)))
 

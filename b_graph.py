@@ -45,7 +45,7 @@ b_points = sorted(b_points)
 
 print(len(b_points))
 b_p = b_points[-1]
-
+print(b_p)
 def create_Z(mass_points, l, xi, b):
 	data = [h for h in temps if h[4] == xi and h[2] == l*h[1] and h[3] == b]
 	points = [(data[k][0], data[k][1]) for k in range(len(data))] # (temp, mass)
@@ -54,17 +54,17 @@ def create_Z(mass_points, l, xi, b):
 
 #print(temps[0])
 
-points = create_Z(mass_points, 10**-1, 0, b_p)
+points = create_Z(mass_points, 10**-1, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "b-")
 
-points = create_Z(mass_points, 10**-2, 0, b_p)
+points = create_Z(mass_points, 10**-2, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "g--")
 
-points = create_Z(mass_points, 10**-3, 0, b_p)
+points = create_Z(mass_points, 10**-3, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "r:")

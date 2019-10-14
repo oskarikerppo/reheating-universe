@@ -102,7 +102,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 0)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 1/6)
 
 print(np.max(Z))
 print(np.min(Z))
@@ -123,7 +123,7 @@ Y = Y/np.max(Y)
 
 
 fig, ax = plt.subplots()
-im = ax.pcolor(X, Y, Z, cmap='jet', norm=colors.LogNorm(vmin=np.min(Z), vmax=np.max(Z)))
+im = ax.pcolor(X, Y, Z, cmap='plasma', norm=colors.LogNorm(vmin=np.min(Z), vmax=np.max(Z)))
 #ax.scatter(X, Y)
 ticks=np.logspace(np.log10(np.min(Z)), np.log10(np.max(Z)), 6, endpoint=True, base=10)
 ticks_labels = [create_string_tick(x) for x in ticks]
@@ -132,7 +132,7 @@ cbar.ax.set_yticklabels(ticks_labels)
 
 
 fig2, ax2 = plt.subplots()
-im2 = ax2.pcolor(X, Y, M, cmap='jet',vmin=0, vmax=1)
+im2 = ax2.pcolor(X, Y, M, cmap='plasma',vmin=0, vmax=1)
 #ax2.scatter(X, Y)
 ticks2 = [0, 1]
 ticks_labels2 = ["Radiation", "Matter"]
@@ -141,7 +141,7 @@ cbar2.ax.set_yticklabels(ticks_labels2)
 
 
 fig3, ax3 = plt.subplots()
-im3 = ax3.pcolor(X, Y, T, cmap='jet', norm=colors.LogNorm(vmin=np.min(T), vmax=np.max(T)))
+im3 = ax3.pcolor(X, Y, T, cmap='plasma', norm=colors.LogNorm(vmin=np.min(T), vmax=np.max(T)))
 #ax.scatter(X, Y)
 ticks3=np.logspace(np.log10(np.min(T)), np.log10(np.max(T)), 6, endpoint=True, base=10)
 ticks_labels3 = [create_string_tick(x) for x in ticks3]
@@ -149,7 +149,7 @@ cbar3 = fig3.colorbar(im3, ticks=ticks3)
 cbar3.ax.set_yticklabels(ticks_labels3)
 
 fig4, ax4 = plt.subplots()
-im4 = ax4.pcolor(X, Y, T2, cmap='jet', norm=colors.LogNorm(vmin=np.min(T2), vmax=np.max(T2)))
+im4 = ax4.pcolor(X, Y, T2, cmap='plasma', norm=colors.LogNorm(vmin=np.min(T2), vmax=np.max(T2)))
 #ax.scatter(X, Y)
 ticks4=np.logspace(np.log10(np.min(T2)), np.log10(np.max(T2)), 6, endpoint=True, base=10)
 ticks_labels4 = [create_string_tick(x) for x in ticks4]
@@ -163,7 +163,7 @@ c_cmap =matplotlib.cm.jet
 #c_cmap.set_bad('black')
 #m_array = np.ma.array(T3, mask=np.isnan(T3))
 fig5, ax5 = plt.subplots()
-im5 = ax5.pcolor(X, Y, T3, cmap='jet', norm=colors.LogNorm(vmin=np.min(T3), vmax=np.max(T3)))
+im5 = ax5.pcolor(X, Y, T3, cmap='plasma', norm=colors.LogNorm(vmin=np.min(T3), vmax=np.max(T3)))
 #im5 = ax5.scatter(X, Y, c=T3, s=T3 ,cmap=c_cmap, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 #ax5.scatter(X, Y, c=T3, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 ticks5=np.logspace(np.log10(np.nanmin(T3)), np.log10(np.nanmax(T3)), 6, endpoint=True, base=10)
@@ -174,15 +174,15 @@ cbar5.ax.set_yticklabels(ticks_labels5)
 #print(m_array)
 
 #Temperature as a function of mass and b
-ax.set_title("Reheating Temperature")
+ax.set_title("")
 ax.set_xlabel('$m$', fontsize=16)
 ax.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax.set_xscale('log')
 ax.set_yscale('log')
 
-ax2.set_title("Matter and radiation dominated areas")
-ax2.set_xlabel("mass", fontsize=16)
-ax2.set_ylabel("b", fontsize=16, rotation='horizontal')
+ax2.set_title("")
+ax2.set_xlabel('$m$', fontsize=16)
+ax2.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax2.set_xscale('log')
 ax2.set_yscale('log')
 
@@ -193,9 +193,9 @@ ax3.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax3.set_xscale('log')
 ax3.set_yscale('log')
 
-ax4.set_title("Time of transition to radiation dominance")
-ax4.set_xlabel("mass", fontsize=16)
-ax4.set_ylabel("b", fontsize=16, rotation='horizontal')
+ax4.set_title("")
+ax4.set_xlabel('$m$', fontsize=16)
+ax4.set_ylabel('$b$', fontsize=16, rotation='horizontal')
 ax4.set_xscale('log')
 ax4.set_yscale('log')
 
