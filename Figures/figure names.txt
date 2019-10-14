@@ -1,0 +1,5 @@
+Fig 1: Reheating temperature
+Fig 2: Matter and radiation dominated areas
+Fig 3: Age of universe at reheating time
+Fig 4: Time of transition to radiation dominance
+Fig 5: Time of transition to matter dominance

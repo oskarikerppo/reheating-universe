@@ -101,7 +101,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-1, 1/6)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 0)
 
 print(np.max(Z))
 print(np.min(Z))
@@ -122,7 +122,7 @@ Y = Y/np.max(Y)
 
 
 fig, ax = plt.subplots()
-im = ax.pcolor(X, Y, Z, cmap='jet', vmin=np.min(Z), vmax=np.max(Z))
+im = ax.pcolor(X, Y, Z, cmap='plasma', vmin=np.min(Z), vmax=np.max(Z))
 #ax.scatter(X, Y)
 ticks=np.linspace(np.min(Z), np.max(Z), 6)
 ticks_labels = [create_string_tick(x) for x in ticks]
@@ -131,7 +131,7 @@ cbar.ax.set_yticklabels(ticks_labels)
 
 
 fig2, ax2 = plt.subplots()
-im2 = ax2.pcolor(X, Y, M, cmap='jet',vmin=0, vmax=1)
+im2 = ax2.pcolor(X, Y, M, cmap='plasma',vmin=0, vmax=1)
 #ax2.scatter(X, Y)
 ticks2 = [0, 1]
 ticks_labels2 = ["Radiation", "Matter"]
@@ -140,7 +140,7 @@ cbar2.ax.set_yticklabels(ticks_labels2)
 
 
 fig3, ax3 = plt.subplots()
-im3 = ax3.pcolor(X, Y, T, cmap='jet', vmin=np.min(T), vmax=np.max(T))
+im3 = ax3.pcolor(X, Y, T, cmap='plasma', vmin=np.min(T), vmax=np.max(T))
 #ax.scatter(X, Y)
 ticks3=np.linspace(np.min(T), np.max(T), 6)
 ticks_labels3 = [create_string_tick(x) for x in ticks3]
@@ -148,7 +148,7 @@ cbar3 = fig3.colorbar(im3, ticks=ticks3)
 cbar3.ax.set_yticklabels(ticks_labels3)
 
 fig4, ax4 = plt.subplots()
-im4 = ax4.pcolor(X, Y, T2, cmap='jet',vmin=np.min(T2), vmax=np.max(T2))
+im4 = ax4.pcolor(X, Y, T2, cmap='plasma',vmin=np.min(T2), vmax=np.max(T2))
 #ax.scatter(X, Y)
 ticks4=np.linspace(np.min(T2), np.max(T2), 6)
 ticks_labels4 = [create_string_tick(x) for x in ticks4]
@@ -162,7 +162,7 @@ c_cmap =matplotlib.cm.jet
 #c_cmap.set_bad('black')
 #m_array = np.ma.array(T3, mask=np.isnan(T3))
 fig5, ax5 = plt.subplots()
-im5 = ax5.pcolor(X, Y, T3, cmap=c_cmap,vmin=np.nanmin(T3), vmax=np.nanmax(T3))
+im5 = ax5.pcolor(X, Y, T3, cmap='plasma',vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 #im5 = ax5.scatter(X, Y, c=T3, s=T3 ,cmap=c_cmap, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 #ax5.scatter(X, Y, c=T3, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 ticks5=np.linspace(np.nanmin(T3), np.nanmax(T3), 10)
