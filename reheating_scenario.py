@@ -3,6 +3,8 @@
 from __future__ import division
 import numpy as np
 from scipy import special
+from scipy.special import hankel1 as h1
+from scipy.special import hankel2 as h2
 import scipy.integrate as integrate
 from scipy.optimize import fsolve, minimize
 from scipy.optimize import minimize
@@ -54,8 +56,9 @@ def Gamma_phi(t, m, b):
 	return 3*((m*b)**(13/3.0))*t*(ai**2 + bi**2)/(32.0*b)
 
 #Differential decay rate for massless particles
-def Gamma_psi(t, m, a, l):
-	return (l**2)*t*((special.jv(a, m*t)**2) + (special.yv(a, m*t)**2))/(32.0)
+def Gamma_psi(t, m, a, l, n):
+	mt = m*t
+	return np.real((l**2)*(1-n)*((1-n)*t**((n-1)/2)*(h1(a, mt)*h2(a, mt) + (h1(a-1, mt) - h1(a+1, mt))*(h2(a-1, mt)-h2(a+1, mt))/4)/2.0 + h1(a-1, mt)*h2(a, mt) - h1(a, mt)*h2(a+1, mt))/64.0)
 
 #Index for Hankel functions
 def alpha(n, xi):
@@ -80,7 +83,7 @@ def rho_phi(t, t_0, n, xi, m, l, b):
 #Energy density for massless particles
 def rho_psi(t, t_0, n, xi, m, l, b):
 	a = alpha(n, xi)
-	return (scale_factor(t)**(-4.0))*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi(x, t_0, n, xi, m, l, b)*(scale_factor(x)**4.0), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
+	return (scale_factor(t)**(-4.0))*integrate.quad(lambda x: Gamma_psi(x, m, a, l, n)*rho_phi(x, t_0, n, xi, m, l, b)*(scale_factor(x)**4.0), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
 
 #Energy density of stiff matter
 def rho_stiff(t, G_N):
@@ -154,7 +157,7 @@ def rho_phi_mat(t, n, xi, m, l, eq_time, rho_eq):
 #Energy density of radiation
 def rho_psi_mat(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq):
 	a = alpha(n, xi)
-	return (1/(t**(8/3.0)))*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi_mat(x, n, xi, m, l, eq_time, rho_eq)*(x**(8/3.0)), eq_time, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + rho_psi_eq*(eq_time/t)**(8/3.0)
+	return (1/(t**(8/3.0)))*integrate.quad(lambda x: Gamma_psi(x, m, a, l, n)*rho_phi_mat(x, n, xi, m, l, eq_time, rho_eq)*(x**(8/3.0)), eq_time, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + rho_psi_eq*(eq_time/t)**(8/3.0)
 
 def matter_minus_rad(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq):
 	return rho_phi_mat(t, n, xi, m, l, eq_time, rho_eq) - rho_psi_mat(t, n, xi, m, l, eq_time, rho_psi_eq, rho_eq)
@@ -188,11 +191,11 @@ def rho_phi_rad(t, n, xi, m, l, eq_tau, rho_tau):
 
 def rho_psi_rad(t, n, xi, m, l, eq_tau, rho_tau, psi_tau):
 	a = alpha(n, xi)
-	return ((1/t)**2)*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + psi_tau*((eq_tau/t)**2)
+	return ((1/t)**2)*integrate.quad(lambda x: Gamma_psi(x, m, a, l, n)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + psi_tau*((eq_tau/t)**2)
 
 def d_rho_psi_rad(t, n, xi, m, l, eq_tau, rho_tau, psi_tau):
 	a = alpha(n, xi)
-	return -2*integrate.quad(lambda x: Gamma_psi(x, m, a, l)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]/(t**3) + Gamma_psi(t, m, a, l)*rho_phi_rad(t, n, xi, m, l, eq_tau, rho_tau) - 2*psi_tau*(eq_tau**2)/(t**3)
+	return -2*integrate.quad(lambda x: Gamma_psi(x, m, a, l, n)*rho_phi_rad(x, n, xi, m, l, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]/(t**3) + Gamma_psi(t, m, a, l, n)*rho_phi_rad(t, n, xi, m, l, eq_tau, rho_tau) - 2*psi_tau*(eq_tau**2)/(t**3)
 
 def r_time(t, n, xi, m, l, eq_tau, rho_tau, psi_tau):
 	#First calculate derivative of radiation density at equal time
@@ -215,7 +218,8 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 	#First calculate time when density of radiation equals that of stiff matter
 	#n equals 1 at this time
 	n = 1
-	etime_rad = eq_time2(t, t_0, n, xi, m, l, b, G_N)
+	#Must use function eq_time with new Gamma
+	etime_rad = eq_time(t, t_0, n, xi, m, l, b, G_N)
 	#print etime_rad
 	#Density of radiation at etime_rad
 	phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, b)
@@ -226,6 +230,9 @@ def reheating_time(t, t_0, m, l, b, xi, G_N, plot):
 	#print "psi_1: " + str(psi_1)
 	#print "stiff_1: " + str(rho_stiff(etime_rad, G_N)) 
 	if psi_1 > phi_1:
+		etime_rad = eq_time2(t, t_0, n, xi, m, l, b, G_N)
+		phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, b)
+		psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, b)
 		#print "Transition from stiff to radiation dominated era"
 		#n eqauals 2 at this time
 		n = 2
@@ -422,4 +429,49 @@ print(reheating_time_star((t, t_0, m, l, b, xi, G_N, plot)))
 
 
 #(t, t_0, m, l, b, xi, G_N, plot)
+
+def Gamma_psi(t, m, a, l, n):
+	mt = m*t
+	return (l**2)*(1-n)*((1-n)*t**((n-1)/2)*(h1(a, mt)*h2(a, mt) + (h1(a-1, mt) - h1(a+1, mt))*(h2(a-1, mt)-h2(a+1, mt))/4)/2.0 + h1(a-1, mt)*h2(a, mt) - h1(a, mt)*h2(a+1, mt))/64.0
+
+#Index for Hankel functions
+def alpha(n, xi):
+        #minkowskian return 1/2.0
+	return ((1 - n*(n - 2)*(6*xi - 1))**(1/2.0))/(2.0 + n)
+
+def Gamma_psi2(t, m, a, l):
+	return (l**2)*t*((special.jv(a, m*t)**2) + (special.yv(a, m*t)**2))/(32.0)
+
+print(Gamma_psi(1000, 10**-7, alpha(2, 1/6), 10**-8, 2))
+print(Gamma_psi2(1000, 10**-7, alpha(2, 1/6), 10**-8))
+'''
+'''
+t_0 = 10**11
+xi = 1/6
+m=10**-10
+l = m*10**-3
+b=1
+G_N=1
+n = 1
+plt.figure("Stiff matter dominated era")
+stiff_era = np.linspace(t_0, t_0*2, resolution) # 100 linearly spaced numbers
+mat = np.array([rho_phi(z, t_0, 1, xi, m, l, b) for z in stiff_era])
+rad = np.array([rho_psi(z, t_0, 1, xi, m, l, b) for z in stiff_era])
+stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
+plt.ylim(0, max(mat[-1], rad[-1])*1.5)
+plt.plot(stiff_era, mat, 'b-')
+plt.plot(stiff_era, rad, 'y-')
+plt.plot(stiff_era, stiff, 'r-')
+
+
+etime_rad = eq_time(t_0*1.1, t_0, n, xi, m, l, b, G_N)
+print(etime_rad)
+
+phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, b)
+#print "phi_1: " + str(phi_1)
+#Density of matter at etime_rad
+psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, b)
+
+print(phi_1 > psi_1)
+plt.show()
 '''
