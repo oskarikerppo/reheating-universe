@@ -389,8 +389,8 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -9
-	min_mass = -13
+	max_mass = -12
+	min_mass = -14
 	mass_points = np.logspace(min_mass, max_mass, 10, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
@@ -403,7 +403,7 @@ def generate_datapoints():
 	conformal_xi = 1.0/6
 	other = 1.0/8
 
-	h = 10**-14
+	h = 10**-15
 
 	for m in mass_points:
 		for b in b_points:
@@ -431,16 +431,16 @@ if __name__ == "__main__":
 '''
 data = generate_datapoints()
 print(data[0])
-
+h = 10**-18
 m = 10**-17
-t, t_0, m, l, h, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-1) * m, 10**-16, 10**0, 0/6, 1.0, True)
+t, t_0, m, l, h, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-1) * 0, h, 10**0, 0/6, 1.0, True)
 
 print(reheating_time_star((t, t_0, m, l, h, b, xi, G_N, plot)))
 
-
+'''
 
 '''
-'''
+
 t_0 = 10**11
 xi = 1/6
 m=10**-17

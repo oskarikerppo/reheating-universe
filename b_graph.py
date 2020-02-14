@@ -11,13 +11,13 @@ matplotlib.rc('text', usetex = True)
 with open('results.pkl', 'rb') as f:
 	results = pickle.load(f)
 
-
 temps= []
 for x in results:
-	try:
-		temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], x[1][3][1]])
-	except:
-		temps.append([x[1][0], x[0][2], x[0][3], x[0][4], x[0][5], x[1][-1], x[1][1][1], x[1][2][1], np.nan])
+  print(x)
+  try:
+    temps.append([x[1][0], x[0][2], x[0][3], x[0][5], x[0][6], x[1][-1], x[1][1][1], x[1][2][1], x[1][3][1]])
+  except:
+    temps.append([x[1][0], x[0][2], x[0][3], x[0][5], x[0][6], x[1][-1], x[1][1][1], x[1][2][1], np.nan])
 
 print(len(temps))
 #print(temps)
