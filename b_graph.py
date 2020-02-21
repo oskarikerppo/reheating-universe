@@ -54,21 +54,21 @@ def create_Z(mass_points, l, xi, b):
 
 #print(temps[0])
 
-points = create_Z(mass_points, 10**-1, 1/6, b_p)
+points = create_Z(mass_points, 10**-4, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "b-")
 
-points = create_Z(mass_points, 10**-2, 1/6, b_p)
+points = create_Z(mass_points, 10**-5, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "g--")
-
+'''
 points = create_Z(mass_points, 10**-3, 1/6, b_p)
 print(points)
 print (b_p)
 plt.plot([p[1] for p in points], [p[0] for p in points], "r:")
-
+'''
         
 plt.xlabel('$m$', fontsize=16)
 plt.ylabel('$T_{rh}$', rotation='horizontal', fontsize=16)

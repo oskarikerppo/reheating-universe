@@ -102,7 +102,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-2, 1/6)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-5, 1/6)
 
 print(np.max(Z))
 print(np.min(Z))
