@@ -414,7 +414,7 @@ def generate_datapoints():
 
 np.seterr(all='raise')
 
-
+'''
 
 if __name__ == "__main__":
 	start = time.time()
@@ -431,13 +431,20 @@ if __name__ == "__main__":
 '''
 data = generate_datapoints()
 print(data[0])
-h = 10**-18
-m = 10**-17
-t, t_0, m, l, h, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-1) * 0, h, 10**0, 0/6, 1.0, True)
+s = []
+for p in range(4, 16):
+	try:
+		print("Trying {}".format(p))
+		h = 10**-p
+		m = 10**-10
+		t, t_0, m, l, h, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-3) * m, h, 10**0, 1/6, 1.0, True)
+		print(reheating_time_star((t, t_0, m, l, h, b, xi, G_N, plot)))
+		s.append(p)
+	except:
+		print("Failed {}".format(p))
+print(s)
 
-print(reheating_time_star((t, t_0, m, l, h, b, xi, G_N, plot)))
 
-'''
 
 '''
 
