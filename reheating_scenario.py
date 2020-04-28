@@ -391,13 +391,13 @@ def generate_datapoints():
 
 	max_mass = -9
 	min_mass = -14
-	mass_points = np.logspace(min_mass, max_mass, 100, endpoint=True, base=10)
+	mass_points = np.logspace(min_mass, max_mass, 10, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 100, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 10, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -407,14 +407,14 @@ def generate_datapoints():
 
 	for m in mass_points:
 		for b in b_points:
-			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [conformal_xi, minimal_xi]:
+			for l in [10**-2]:
+				for xi in [conformal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, h, b, xi, G_N, plot))
 	return data
 
 np.seterr(all='raise')
 
-'''
+
 
 if __name__ == "__main__":
 	start = time.time()
@@ -425,8 +425,10 @@ if __name__ == "__main__":
 	for i, x in enumerate(p.imap_unordered(reheating_time_star, data, 1)):
 		results.append(x)
 		sys.stderr.write('\rdone {0:%}'.format(float(i)/len(data)))
+	p.terminate()
 	with open('results.pkl', 'wb') as f:
-		pickle.dump(results, f, protocol=2)
+		pickle.dump(results, f)
+	sys.exit()
 
 '''
 data = generate_datapoints()
@@ -446,7 +448,7 @@ print(s)
 
 
 
-'''
+
 
 t_0 = 10**11
 xi = 1/6
