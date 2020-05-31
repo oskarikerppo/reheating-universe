@@ -103,7 +103,7 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-Z, M, T, T2, T3 = create_Z(X, Y, 10**-1, 0)
+Z, M, T, T2, T3 = create_Z(X, Y, 10**-3, 1/6)
 
 print(np.max(Z))
 print(np.min(Z))
@@ -164,7 +164,7 @@ c_cmap =matplotlib.cm.jet
 #c_cmap.set_bad('black')
 #m_array = np.ma.array(T3, mask=np.isnan(T3))
 fig5, ax5 = plt.subplots()
-im5 = ax5.pcolor(X, Y, T3, cmap='plasma', norm=colors.LogNorm(vmin=np.min(T3), vmax=np.max(T3)))
+im5 = ax5.pcolor(X, Y, T3, cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(T3), vmax=np.nanmax(T3)))
 #im5 = ax5.scatter(X, Y, c=T3, s=T3 ,cmap=c_cmap, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 #ax5.scatter(X, Y, c=T3, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 ticks5=np.logspace(np.log10(np.nanmin(T3)), np.log10(np.nanmax(T3)), 6, endpoint=True, base=10)
