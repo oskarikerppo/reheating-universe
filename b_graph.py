@@ -54,7 +54,7 @@ def create_Z(mass_points, l, xi, b):
 	return points
 
 #print(temps[0])
-for xi in [0, 1/6]:
+for xi in [1/6]:
 	for b_p in [b_points[0], b_points[int(len(b_points)/2)], b_points[-1]]:
 
 		points = create_Z(mass_points, 10**-1, xi, b_p)

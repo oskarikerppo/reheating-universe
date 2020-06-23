@@ -23,7 +23,7 @@ for x in results:
 
 print(len(temps))
 print(temps[0])
-temps = [x for x in temps if x[1] < 1.1*10**-8]
+#temps = [x for x in temps if x[1] < 1.1*10**-8]
 print(len(temps))
 print(temps[0])
 
@@ -100,7 +100,7 @@ def create_Z(x, y, l, xi):
 				if data[k][1] == x[i][j] and data[k][3] == y[i][j]:
 					z = data[k][0]
 					if z == 0:
-						Z[i][j] = 1
+						Z[i][j] = np.nan
 					else:
 						Z[i][j] = z
 					if data[k][5]:
@@ -109,14 +109,17 @@ def create_Z(x, y, l, xi):
 						M[i][j] = 0
 					T[i][j] = data[k][-3]
 					T2[i][j] = data[k][-2]
-					T3[i][j] = data[k][-1]
+					if data[k][-1] == 0:
+						T3[i][j] = np.nan
+					else:
+						T3[i][j] = data[k][-1]
 					data.pop(k)
 					break
 	return Z, M, T, T2, T3
 
 print(temps[0])
 for lam in [10**-1, 10**-2, 10**-3]:
-	for xi in [0, 1/6]:
+	for xi in [1/6]:
 		Z, M, T, T2, T3 = create_Z(X, Y, lam, xi)
 
 		print(np.max(Z))
@@ -140,9 +143,9 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig, ax = plt.subplots()
-		im = ax.pcolor(X, Y, Z, cmap='plasma', norm=colors.LogNorm(vmin=np.min(Z), vmax=np.max(Z)))
+		im = ax.pcolor(X, Y, Z, cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(Z), vmax=np.nanmax(Z)))
 		#ax.scatter(X, Y)
-		ticks=np.logspace(np.log10(np.min(Z)), np.log10(np.max(Z)), 6, endpoint=True, base=10)
+		ticks=np.logspace(np.log10(np.nanmin(Z)), np.log10(np.nanmax(Z)), 6, endpoint=True, base=10)
 		ticks_labels = [create_string_tick(x) for x in ticks]
 		cbar = fig.colorbar(im, ticks=ticks)
 		cbar.ax.set_yticklabels(ticks_labels)
