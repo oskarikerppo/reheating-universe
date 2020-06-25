@@ -408,7 +408,7 @@ def generate_datapoints():
 	for m in mass_points:
 		for b in b_points:
 			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [conformal_xi]:
+				for xi in [minimal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, h, b, xi, G_N, plot))
 	return data
 

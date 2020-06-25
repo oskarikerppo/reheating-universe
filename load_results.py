@@ -119,7 +119,7 @@ def create_Z(x, y, l, xi):
 
 print(temps[0])
 for lam in [10**-1, 10**-2, 10**-3]:
-	for xi in [1/6]:
+	for xi in [0]:
 		Z, M, T, T2, T3 = create_Z(X, Y, lam, xi)
 
 		print(np.max(Z))
