@@ -70,8 +70,10 @@ def Gamma_psi(t, m, a, h, n):
 
 #Index for Hankel functions
 def alpha(n, xi):
-        #minkowskian return 1/2.0
-	return ((1 - n*(n - 2)*(6*xi - 1))**(1/2.0))/(2.0 + n)
+    #minkowskian return 1/2.0
+	#return ((1 - n*(n - 2)*(6*xi - 1))**(1/2.0))/(2.0 + n)
+	#NEW
+	return (((1 - n)**2 - 4*n*(2*n - 1)*(6*xi - 1))**(1/2))/2
 
 def bessel(t, m, a, l):
 	return ((l*t)**2.0)*((special.jv(a, m*t)**2) - special.jv(a-1, m*t)*special.jv(a+1, m*t) - special.yv(a+1, m*t)*special.yv(a-1, m*t) + (special.yv(a, m*t)**2))/64.0
@@ -225,7 +227,7 @@ def r_time(t, n, xi, m, l, h, eq_tau, rho_tau, psi_tau):
 def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
 	#First calculate time when density of radiation equals that of stiff matter
 	#n equals 1 at this time
-	n = 1
+	n = 1/3
 	#Must use function eq_time with new Gamma
 	etime_rad = eq_time(t, t_0, n, xi, m, l, h, b, G_N)
 	#print etime_rad
@@ -243,7 +245,7 @@ def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
 		psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, h, b)
 		#print "Transition from stiff to radiation dominated era"
 		#n eqauals 2 at this time
-		n = 2
+		n = 1/2
 		psi_rad_init = psi_1
 		phi_rad_init = phi_1
 		#print rho_phi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init)
@@ -261,7 +263,7 @@ def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
 
 
 		#Radiation dominated era begins, n equals 2
-		n = 2
+		n = 1/2
 		
 		#Sove for the reheating temperature
 		reh_time = r_time(etime_rad, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init)
@@ -301,7 +303,7 @@ def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
 		#print "Transition from stiff to matter dominated era"
 		#n equals 4 at this era
 		#Calculate intersection of stiff and matter
-		n = 1
+		n = 1/3
 		etime_mat = eq_time(t, t_0, n, xi, m, l, h, b, G_N)
 	
 		#print etime_mat
@@ -326,7 +328,7 @@ def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
 		#print stiff_1
 
 		#Matter dominated era begins, and n is now 4
-		n = 4
+		n = 2/3
 
 		etime_rad = eq_tau(etime_mat, n, xi, m, l, h, etime_mat, psi_1, phi_1)
 		#print etime_rad
@@ -346,7 +348,7 @@ def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
 			plt.plot(mat_era, stiff, 'r-')
 		
 		#Radiation dominated era begins, n equals 2
-		n = 2
+		n = 1/2
 		
 		
 		#Sove for the reheating temperature
@@ -391,13 +393,13 @@ def generate_datapoints():
 
 	max_mass = -7
 	min_mass = -12
-	mass_points = np.logspace(min_mass, max_mass, 100, endpoint=True, base=10)
+	mass_points = np.logspace(min_mass, max_mass, 5, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
 
 	min_b = -1
 	max_b = 1
-	b_points = np.logspace(min_b, max_b, 100, endpoint=True, base=10)
+	b_points = np.logspace(min_b, max_b, 5, endpoint=True, base=10)
 
 	minimal_xi = 0.0
 	conformal_xi = 1.0/6
@@ -408,7 +410,7 @@ def generate_datapoints():
 	for m in mass_points:
 		for b in b_points:
 			for l in [10**-1, 10**-2, 10**-3]:
-				for xi in [minimal_xi]:
+				for xi in [minimal_xi, conformal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, h, b, xi, G_N, plot))
 	return data
 
