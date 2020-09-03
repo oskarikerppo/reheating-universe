@@ -19,7 +19,7 @@ for x in results:
   except:
     temps.append([x[1][0], x[0][2], x[0][3], x[0][5], x[0][6], x[1][-1], x[1][1][1], x[1][2][1], np.nan])
 
-temps = [x for x in temps if x[1] < 1.1*10**-8]
+#temps = [x for x in temps if x[1] < 1.1*10**-8]
 #print(len(temps))
 #print(temps)
 mat_temps = []
