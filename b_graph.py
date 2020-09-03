@@ -54,7 +54,7 @@ def create_Z(mass_points, l, xi, b):
 	return points
 
 #print(temps[0])
-for xi in [0/6]:
+for xi in [0, 1/6]:
 	for b_p in [b_points[0], b_points[int(len(b_points)/2)], b_points[-1]]:
 
 		points = create_Z(mass_points, 10**-1, xi, b_p)
@@ -86,7 +86,7 @@ for xi in [0/6]:
 			xi_path = "Conformal"
 		else:
 			xi_path = "Other"
-		save_path = r"Figures\{}\b_graph_{}.pdf".format(xi_path, b_p)
+		save_path = r"Figures/{}/b_graph_{}.pdf".format(xi_path, b_p)
 		plt.savefig(save_path)
 		plt.close()
 		#plt.show()

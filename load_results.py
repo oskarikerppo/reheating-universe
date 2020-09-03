@@ -119,7 +119,7 @@ def create_Z(x, y, l, xi):
 
 print(temps[0])
 for lam in [10**-1, 10**-2, 10**-3]:
-	for xi in [0]:
+	for xi in [1/6]:
 		Z, M, T, T2, T3 = create_Z(X, Y, lam, xi)
 
 		print(np.max(Z))
@@ -247,12 +247,12 @@ for lam in [10**-1, 10**-2, 10**-3]:
 			lambda_path = "-5"
 
 
-		path = r"Figures\{}\{}".format(xi_path, lambda_path)
-		fig.savefig(path + r"\Figure_1.pdf")
-		fig2.savefig(path + r"\Figure_2.pdf")
-		fig3.savefig(path + r"\Figure_3.pdf")
-		fig4.savefig(path + r"\Figure_4.pdf")
-		fig5.savefig(path + r"\Figure_5.pdf")
+		path = r"Figures/{}/{}".format(xi_path, lambda_path)
+		fig.savefig(path  + "/Figure_1.pdf")
+		fig2.savefig(path + "/Figure_2.pdf")
+		fig3.savefig(path + "/Figure_3.pdf")
+		fig4.savefig(path + "/Figure_4.pdf")
+		fig5.savefig(path + "/Figure_5.pdf")
 		plt.close(fig = fig)
 		plt.close(fig = fig2)
 		plt.close(fig = fig3)
