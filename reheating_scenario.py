@@ -392,7 +392,7 @@ def generate_datapoints():
 	plot = False
 
 	max_mass = -7
-	min_mass = -12
+	min_mass = -14
 	mass_points = np.logspace(min_mass, max_mass, 100, endpoint=True, base=10)
 
 	#lam = 10**min_mass*0.1
@@ -405,7 +405,7 @@ def generate_datapoints():
 	conformal_xi = 1.0/6
 	other = 1.0/8
 
-	h = 10**-12
+	h = 10**-14
 
 	for m in mass_points:
 		for b in b_points:
