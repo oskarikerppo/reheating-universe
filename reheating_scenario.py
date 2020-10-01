@@ -70,10 +70,11 @@ def Gamma_psi(t, m, a, h, n):
 
 #Index for Hankel functions
 def alpha(n, xi):
-    #minkowskian return 1/2.0
-	#return ((1 - n*(n - 2)*(6*xi - 1))**(1/2.0))/(2.0 + n)
-	#NEW
-	return (((1 - n)**2 - 4*n*(2*n - 1)*(6*xi - 1))**(1/2))/2
+    #minkowskian
+    return 1/2.0
+    #return ((1 - n*(n - 2)*(6*xi - 1))**(1/2.0))/(2.0 + n)
+    #NEW
+    #return (((1 - n)**2 - 4*n*(2*n - 1)*(6*xi - 1))**(1/2))/2
 
 def bessel(t, m, a, l):
 	return ((l*t)**2.0)*((special.jv(a, m*t)**2) - special.jv(a-1, m*t)*special.jv(a+1, m*t) - special.yv(a+1, m*t)*special.yv(a-1, m*t) + (special.yv(a, m*t)**2))/64.0
