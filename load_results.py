@@ -119,13 +119,24 @@ def create_Z(x, y, l, xi):
 	return Z, M, T, T2, T3
 
 print(temps[0])
-for lam in [10**-1, 10**-2, 10**-3]:
-	for xi in [0, 1/6]:
+for lam in [0]:
+	for xi in [0]:
 		Z, M, T, T2, T3 = create_Z(X, Y, lam, xi)
-
+		print("Max")
 		print(np.max(Z))
+		print("Min")
 		print(np.min(Z))
+		
+		print(Z)
+		print(M)
+		print(T)
+		print(T2)
+		print(T3)
 
+		print(X)
+		print(Y)
+
+		
 
 		'''
 		X = X-np.min(X)
@@ -144,7 +155,8 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig, ax = plt.subplots()
-		im = ax.pcolor(X, Y, Z, shading='auto', cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(Z), vmax=np.nanmax(Z)))
+		im = ax.pcolor(X, Y, Z, cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(Z), vmax=np.nanmax(Z)))
+		#plt.show()
 		#ax.scatter(X, Y)
 		ticks=np.logspace(np.log10(np.nanmin(Z)), np.log10(np.nanmax(Z)), 6, endpoint=True, base=10)
 		ticks_labels = [create_string_tick(x) for x in ticks]
@@ -153,7 +165,7 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig2, ax2 = plt.subplots()
-		im2 = ax2.pcolor(X, Y, M, shading='auto', cmap='plasma',vmin=0, vmax=1)
+		im2 = ax2.pcolor(X, Y, M, cmap='plasma',vmin=0, vmax=1)
 		#ax2.scatter(X, Y)
 		ticks2 = [0, 1]
 		ticks_labels2 = ["Radiation", "Matter"]
@@ -162,17 +174,17 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig3, ax3 = plt.subplots()
-		im3 = ax3.pcolor(X, Y, T, shading='auto', cmap='plasma', norm=colors.LogNorm(vmin=np.min(T), vmax=np.max(T)))
+		im3 = ax3.pcolor(X, Y, T, cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(T), vmax=np.nanmax(T)))
 		#ax.scatter(X, Y)
-		ticks3=np.logspace(np.log10(np.min(T)), np.log10(np.max(T)), 6, endpoint=True, base=10)
+		ticks3=np.logspace(np.log10(np.nanmin(T)), np.log10(np.nanmax(T)), 6, endpoint=True, base=10)
 		ticks_labels3 = [create_string_tick(x) for x in ticks3]
 		cbar3 = fig3.colorbar(im3, ticks=ticks3)
 		cbar3.ax.set_yticklabels(ticks_labels3)
 
 		fig4, ax4 = plt.subplots()
-		im4 = ax4.pcolor(X, Y, T2, shading='auto', cmap='plasma', norm=colors.LogNorm(vmin=np.min(T2), vmax=np.max(T2)))
+		im4 = ax4.pcolor(X, Y, T2, cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(T2), vmax=np.nanmax(T2)))
 		#ax.scatter(X, Y)
-		ticks4=np.logspace(np.log10(np.min(T2)), np.log10(np.max(T2)), 6, endpoint=True, base=10)
+		ticks4=np.logspace(np.log10(np.nanmin(T2)), np.log10(np.nanmax(T2)), 6, endpoint=True, base=10)
 		ticks_labels4 = [create_string_tick(x) for x in ticks4]
 		cbar4 = fig4.colorbar(im4, ticks=ticks4)
 		cbar4.ax.set_yticklabels(ticks_labels4)
@@ -185,8 +197,11 @@ for lam in [10**-1, 10**-2, 10**-3]:
 		c_cmap = copy.copy(matplotlib.cm.plasma)
 		c_cmap.set_bad('black', 1.)
 		m_array = np.ma.array(T3, mask=np.isnan(T3))
+		print(m_array)
+
 		fig5, ax5 = plt.subplots()
-		im5 = ax5.pcolormesh(X, Y, m_array, shading='auto', cmap=c_cmap, norm=colors.LogNorm(vmin=np.nanmin(T3), vmax=np.nanmax(T3)))
+		im5 = ax5.pcolormesh(X, Y, m_array, cmap=c_cmap, norm=colors.LogNorm(vmin=np.nanmin(T3), vmax=np.nanmax(T3)))
+
 		#im5 = ax5.scatter(X, Y, c=T3, s=T3 ,cmap=c_cmap, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 		#ax5.scatter(X, Y, c=T3, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 		ticks5=np.logspace(np.log10(np.nanmin(T3)), np.log10(np.nanmax(T3)), 6, endpoint=True, base=10)
@@ -231,14 +246,15 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 		#Save figures
 		#Save path
-
 		if xi == 0:
 			xi_path = "Minimal"
 		elif xi == 1/6:
 			xi_path = "Conformal"
 		else:
 			xi_path = "Other"
-		if lam == 10**-1:
+		if lam == 0:
+			lambda_path = "0"			
+		elif lam == 10**-1:
 			lambda_path = "-1"
 		elif lam == 10**-2:
 			lambda_path = "-2"
@@ -249,13 +265,13 @@ for lam in [10**-1, 10**-2, 10**-3]:
 		else:
 			lambda_path = "-5"
 
-
 		path = r"Figures/{}/{}".format(xi_path, lambda_path)
 		fig.savefig(path  + "/Figure_1.pdf")
 		fig2.savefig(path + "/Figure_2.pdf")
 		fig3.savefig(path + "/Figure_3.pdf")
 		fig4.savefig(path + "/Figure_4.pdf")
 		fig5.savefig(path + "/Figure_5.pdf")
+
 		plt.close(fig = fig)
 		plt.close(fig = fig2)
 		plt.close(fig = fig3)

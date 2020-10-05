@@ -36,7 +36,7 @@ lmt=10000
 
 
 #Resolution for figures
-resolution = 50
+resolution = 20
 
 
 #Timing decorator
@@ -81,7 +81,7 @@ def bessel(t, m, a, l):
  
 def f(t, t_0, n, xi, m, l, h):
 	a = alpha(n, xi)
-	return integrate.quad(lambda x: Gamma_chi(x, m, a, l, n) + Gamma_psi(x, m, a, h, n), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
+	return integrate.quad(lambda x: Gamma_psi(x, m, a, h, n), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
 
 def scale_factor(t):
 	return t**(1/3.0)
@@ -94,7 +94,7 @@ def rho_phi(t, t_0, n, xi, m, l, h, b):
 #Energy density for massless particles
 def rho_psi(t, t_0, n, xi, m, l, h, b):
 	a = alpha(n, xi)
-	return (scale_factor(t)**(-4.0))*integrate.quad(lambda x: (Gamma_psi(x, m, a, h, n) + Gamma_chi(x, m, a, l, n))*rho_phi(x, t_0, n, xi, m, l, h, b)*(scale_factor(x)**4.0), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
+	return (scale_factor(t)**(-4.0))*integrate.quad(lambda x: (Gamma_psi(x, m, a, h, n))*rho_phi(x, t_0, n, xi, m, l, h, b)*(scale_factor(x)**4.0), t_0, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]
 
 #Energy density of stiff matter
 def rho_stiff(t, G_N):
@@ -168,7 +168,7 @@ def rho_phi_mat(t, n, xi, m, l, h, eq_time, rho_eq):
 #Energy density of radiation
 def rho_psi_mat(t, n, xi, m, l, h, eq_time, rho_psi_eq, rho_eq):
 	a = alpha(n, xi)
-	return (1/(t**(8/3.0)))*integrate.quad(lambda x: (Gamma_psi(x, m, a, h, n) + Gamma_chi(x, m, a, l, n))*rho_phi_mat(x, n, xi, m, l, h, eq_time, rho_eq)*(x**(8/3.0)), eq_time, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + rho_psi_eq*(eq_time/t)**(8/3.0)
+	return (1/(t**(8/3.0)))*integrate.quad(lambda x: (Gamma_psi(x, m, a, h, n))*rho_phi_mat(x, n, xi, m, l, h, eq_time, rho_eq)*(x**(8/3.0)), eq_time, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + rho_psi_eq*(eq_time/t)**(8/3.0)
 
 def matter_minus_rad(t, n, xi, m, l, h, eq_time, rho_psi_eq, rho_eq):
 	return rho_phi_mat(t, n, xi, m, l, h, eq_time, rho_eq) - rho_psi_mat(t, n, xi, m, l, h, eq_time, rho_psi_eq, rho_eq)
@@ -202,11 +202,11 @@ def rho_phi_rad(t, n, xi, m, l, h, eq_tau, rho_tau):
 
 def rho_psi_rad(t, n, xi, m, l, h, eq_tau, rho_tau, psi_tau):
 	a = alpha(n, xi)
-	return ((1/t)**2)*integrate.quad(lambda x: (Gamma_chi(x, m, a, l, n) + Gamma_psi(x, m, a, h, n))*rho_phi_rad(x, n, xi, m, l, h, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + psi_tau*((eq_tau/t)**2)
+	return ((1/t)**2)*integrate.quad(lambda x: (Gamma_psi(x, m, a, h, n))*rho_phi_rad(x, n, xi, m, l, h, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0] + psi_tau*((eq_tau/t)**2)
 
 def d_rho_psi_rad(t, n, xi, m, l, h, eq_tau, rho_tau, psi_tau):
 	a = alpha(n, xi)
-	return -2*integrate.quad(lambda x: (Gamma_chi(x, m, a, l, n) + Gamma_psi(x, m, a, h, n))*rho_phi_rad(x, n, xi, m, l, h, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]/(t**3) + Gamma_psi(t, m, a, h, n)*rho_phi_rad(t, n, xi, m, l, h, eq_tau, rho_tau) - 2*psi_tau*(eq_tau**2)/(t**3)
+	return -2*integrate.quad(lambda x: (Gamma_psi(x, m, a, h, n))*rho_phi_rad(x, n, xi, m, l, h, eq_tau, rho_tau)*(x**2), eq_tau, t, epsabs=eabs, epsrel=erel, limit=lmt)[0]/(t**3) + Gamma_psi(t, m, a, h, n)*rho_phi_rad(t, n, xi, m, l, h, eq_tau, rho_tau) - 2*psi_tau*(eq_tau**2)/(t**3)
 
 def r_time(t, n, xi, m, l, h, eq_tau, rho_tau, psi_tau):
 	#First calculate derivative of radiation density at equal time
@@ -392,7 +392,7 @@ def generate_datapoints():
 	G_N = 1.0
 	plot = False
 
-	max_mass = -7
+	max_mass = -10
 	min_mass = -14
 	mass_points = np.logspace(min_mass, max_mass, 100, endpoint=True, base=10)
 
@@ -410,7 +410,7 @@ def generate_datapoints():
 
 	for m in mass_points:
 		for b in b_points:
-			for l in [10**-1, 10**-2, 10**-3]:
+			for l in [0]:
 				for xi in [minimal_xi, conformal_xi]:
 					data.append((1.1*t_0, t_0, m, m*l, h, b, xi, G_N, plot))
 	return data
@@ -433,31 +433,28 @@ if __name__ == "__main__":
 		pickle.dump(results, f)
 	sys.exit()
 
+
+
 '''
 data = generate_datapoints()
-print(data[0])
-s = []
-for p in range(4, 16):
-	try:
-		print("Trying {}".format(p))
-		h = 10**-p
-		m = 10**-10
-		t, t_0, m, l, h, b, xi, G_N, plot = (1.1*10**11, 10**11, m, (10**-3) * m, h, 10**0, 1/6, 1.0, True)
-		print(reheating_time_star((t, t_0, m, l, h, b, xi, G_N, plot)))
-		s.append(p)
-	except:
-		print("Failed {}".format(p))
-print(s)
 
 
+m=10**-14
+l = 0
+h = 10**-14
+t, t_0, m, l, h, b, xi, G_N, plot = (1.1*10**11, 10**11, m, l, h, 10**0, 0, 1.0, True)
+print(reheating_time_star((t, t_0, m, l, h, b, xi, G_N, plot)))
+'''
+
+'''
 
 
 
 t_0 = 10**11
-xi = 1/6
-m=10**-17
-l = m*10**-3
-h = 10**-20
+xi = 0
+m=10**-12
+l = 0
+h = 10**-14
 b=1
 G_N=1
 n = 1
