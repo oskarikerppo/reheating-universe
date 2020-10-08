@@ -226,161 +226,167 @@ def r_time(t, n, xi, m, l, h, eq_tau, rho_tau, psi_tau):
 ######################## MAIN #####################
 
 def reheating_time(t, t_0, m, l, h, b, xi, G_N, plot):
-	#First calculate time when density of radiation equals that of stiff matter
-	#n equals 1 at this time
-	n = 1/3
-	#Must use function eq_time with new Gamma
-	etime_rad = eq_time(t, t_0, n, xi, m, l, h, b, G_N)
-	#print etime_rad
-	#Density of radiation at etime_rad
-	phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, h, b)
-	#print "phi_1: " + str(phi_1)
-	#Density of matter at etime_rad
-	psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, h, b)
-	#If density of radiation is greater, we go straight to radiation dominated era
-	#print "psi_1: " + str(psi_1)
-	#print "stiff_1: " + str(rho_stiff(etime_rad, G_N)) 
-	if psi_1 > phi_1:
-		etime_rad = eq_time2(t, t_0, n, xi, m, l, h, b, G_N)
-		phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, h, b)
-		psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, h, b)
-		#print "Transition from stiff to radiation dominated era"
-		#n eqauals 2 at this time
-		n = 1/2
-		psi_rad_init = psi_1
-		phi_rad_init = phi_1
-		#print rho_phi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init)
-		#print rho_psi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init)
-		if plot:
-			plt.figure("Stiff matter dominated era")
-			stiff_era = np.linspace(t_0, etime_rad*1.5, resolution) # 100 linearly spaced numbers
-			mat = np.array([rho_phi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
-			rad = np.array([rho_psi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
-			stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
-			plt.ylim(0, max(mat[-1], rad[-1])*1.5)
-			plt.plot(stiff_era, mat, 'b-')
-			plt.plot(stiff_era, rad, 'y-')
-			plt.plot(stiff_era, stiff, 'r-')
+    try:
+            #First calculate time when density of radiation equals that of stiff matter
+            #n equals 1 at this time
+            n = 1/3
+            #Must use function eq_time with new Gamma
+            etime_rad = eq_time(t, t_0, n, xi, m, l, h, b, G_N)
+            #print etime_rad
+            #Density of radiation at etime_rad
+            phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, h, b)
+            #print "phi_1: " + str(phi_1)
+            #Density of matter at etime_rad
+            psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, h, b)
+            #If density of radiation is greater, we go straight to radiation dominated era
+            #print "psi_1: " + str(psi_1)
+            #print "stiff_1: " + str(rho_stiff(etime_rad, G_N)) 
+            if psi_1 > phi_1:
+                    etime_rad = eq_time2(t, t_0, n, xi, m, l, h, b, G_N)
+                    phi_1 =  rho_phi(etime_rad, t_0, n, xi, m, l, h, b)
+                    psi_1 = rho_psi(etime_rad, t_0, n, xi, m, l, h, b)
+                    #print "Transition from stiff to radiation dominated era"
+                    #n eqauals 2 at this time
+                    n = 1/2
+                    psi_rad_init = psi_1
+                    phi_rad_init = phi_1
+                    #print rho_phi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init)
+                    #print rho_psi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init)
+                    if plot:
+                            plt.figure("Stiff matter dominated era")
+                            stiff_era = np.linspace(t_0, etime_rad*1.5, resolution) # 100 linearly spaced numbers
+                            mat = np.array([rho_phi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
+                            rad = np.array([rho_psi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
+                            stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
+                            plt.ylim(0, max(mat[-1], rad[-1])*1.5)
+                            plt.plot(stiff_era, mat, 'b-')
+                            plt.plot(stiff_era, rad, 'y-')
+                            plt.plot(stiff_era, stiff, 'r-')
 
 
-		#Radiation dominated era begins, n equals 2
-		n = 1/2
-		
-		#Sove for the reheating temperature
-		reh_time = r_time(etime_rad, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init)
-		#print reh_time
-		max_density = rho_psi_rad(reh_time, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init)
-		#print max_density
-		#Transfer reheating time to temperature
-		#print "Reheating temperature: "
-		#print math.pow(max_density,1.0/4.0)
+                    #Radiation dominated era begins, n equals 2
+                    n = 1/2
+                    
+                    #Sove for the reheating temperature
+                    reh_time = r_time(etime_rad, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init)
+                    #print reh_time
+                    max_density = rho_psi_rad(reh_time, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init)
+                    #print max_density
+                    #Transfer reheating time to temperature
+                    #print "Reheating temperature: "
+                    #print math.pow(max_density,1.0/4.0)
 
 
-		#print "RADIATION INTERSECTS STIFF: " + str(etime_rad)
-		#print "REHEATING TIME: " + str(reh_time)
-		#print "REHEATING TIME LARGER THAN FIRST INTERSECTION (NEEDS TO BE TRUE): {}".format(str(float(reh_time) > float(etime_rad)))
+                    #print "RADIATION INTERSECTS STIFF: " + str(etime_rad)
+                    #print "REHEATING TIME: " + str(reh_time)
+                    #print "REHEATING TIME LARGER THAN FIRST INTERSECTION (NEEDS TO BE TRUE): {}".format(str(float(reh_time) > float(etime_rad)))
 
-		if plot:
-			plt.figure("Radiation dominated era")
-			rad_era = np.linspace(etime_rad, reh_time*1.05, resolution) # 100 linearly spaced numbers
-			mat = np.array([rho_phi_rad(z, n, xi, m, l, h, etime_rad, phi_rad_init) for z in rad_era])
-			rad = np.array([rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
-			d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
-			stiff = np.array([rho_stiff_rad_no_mat(z, etime_rad, G_N) for z in rad_era])
-			plt.ylim(0, max(rad)*1.1)
-			plt.plot(rad_era, mat, 'b-')
-			plt.plot(rad_era, rad, 'y-')
-			plt.plot(rad_era, d_rad, 'g-')
-			plt.plot(rad_era, stiff, 'r-')
-			#print(rad)
-			#print(reh_time)
-			#print(d_rho_psi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init))
-			#print(d_rho_psi_rad(reh_time, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init))
-			#print(d_rad)
-			plt.show()
-		return [max_density**(1/4) ,(max_density, reh_time), (psi_rad_init, etime_rad), False]
+                    if plot:
+                            plt.figure("Radiation dominated era")
+                            rad_era = np.linspace(etime_rad, reh_time*1.05, resolution) # 100 linearly spaced numbers
+                            mat = np.array([rho_phi_rad(z, n, xi, m, l, h, etime_rad, phi_rad_init) for z in rad_era])
+                            rad = np.array([rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
+                            d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_rad_init, psi_rad_init) for z in rad_era])
+                            stiff = np.array([rho_stiff_rad_no_mat(z, etime_rad, G_N) for z in rad_era])
+                            plt.ylim(0, max(rad)*1.1)
+                            plt.plot(rad_era, mat, 'b-')
+                            plt.plot(rad_era, rad, 'y-')
+                            plt.plot(rad_era, d_rad, 'g-')
+                            plt.plot(rad_era, stiff, 'r-')
+                            #print(rad)
+                            #print(reh_time)
+                            #print(d_rho_psi_rad(etime_rad, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init))
+                            #print(d_rho_psi_rad(reh_time, n, xi, m, l, etime_rad, phi_rad_init, psi_rad_init))
+                            #print(d_rad)
+                            plt.show()
+                    return [max_density**(1/4) ,(max_density, reh_time), (psi_rad_init, etime_rad), False]
 
-	else:
-		#print "Transition from stiff to matter dominated era"
-		#n equals 4 at this era
-		#Calculate intersection of stiff and matter
-		n = 1/3
-		etime_mat = eq_time(t, t_0, n, xi, m, l, h, b, G_N)
-	
-		#print etime_mat
-		if plot:
-			plt.figure("Stiff matter dominated era")
-			stiff_era = np.linspace(t_0, etime_mat, resolution) # 100 linearly spaced numbers
-			mat = np.array([rho_phi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
-			rad = np.array([rho_psi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
-			stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
-			plt.ylim(0, mat[-1]*1.1)
-			plt.plot(stiff_era, mat, 'b-')
-			plt.plot(stiff_era, rad, 'y-')
-			plt.plot(stiff_era, stiff, 'r-')
+            else:
+                    #print "Transition from stiff to matter dominated era"
+                    #n equals 4 at this era
+                    #Calculate intersection of stiff and matter
+                    n = 1/3
+                    etime_mat = eq_time(t, t_0, n, xi, m, l, h, b, G_N)
+            
+                    #print etime_mat
+                    if plot:
+                            plt.figure("Stiff matter dominated era")
+                            stiff_era = np.linspace(t_0, etime_mat, resolution) # 100 linearly spaced numbers
+                            mat = np.array([rho_phi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
+                            rad = np.array([rho_psi(z, t_0, 1, xi, m, l, h, b) for z in stiff_era])
+                            stiff = np.array([rho_stiff(z, G_N) for z in stiff_era])
+                            plt.ylim(0, mat[-1]*1.1)
+                            plt.plot(stiff_era, mat, 'b-')
+                            plt.plot(stiff_era, rad, 'y-')
+                            plt.plot(stiff_era, stiff, 'r-')
 
-		
-		phi_1 =  rho_phi(etime_mat, t_0, n, xi, m, l, h, b)
-		psi_1 = rho_psi(etime_mat, t_0, n, xi, m, l, h, b)
-		stiff_1 = rho_stiff(etime_mat, G_N)
-		#print etime_mat
-		#print phi_1
-		#print psi_1
-		#print stiff_1
+                    
+                    phi_1 =  rho_phi(etime_mat, t_0, n, xi, m, l, h, b)
+                    psi_1 = rho_psi(etime_mat, t_0, n, xi, m, l, h, b)
+                    stiff_1 = rho_stiff(etime_mat, G_N)
+                    #print etime_mat
+                    #print phi_1
+                    #print psi_1
+                    #print stiff_1
 
-		#Matter dominated era begins, and n is now 4
-		n = 2/3
+                    #Matter dominated era begins, and n is now 4
+                    n = 2/3
 
-		etime_rad = eq_tau(etime_mat, n, xi, m, l, h, etime_mat, psi_1, phi_1)
-		#print etime_rad
-		phi_2 = rho_phi_mat(etime_rad, n, xi, m, l, h, etime_mat, phi_1)
-		psi_2 = rho_psi_mat(etime_rad, n, xi, m, l, h, etime_mat, psi_1, phi_1)
-		#print phi_2
-		#print psi_2
-		if plot:
-			plt.figure("Matter dominated era")
-			mat_era = np.linspace(etime_mat, etime_rad*1, resolution) # 100 linearly spaced numbers
-			mat = np.array([rho_phi_mat(z, n, xi, m, l, h, etime_mat, phi_1) for z in mat_era])
-			rad = np.array([rho_psi_mat(z, n, xi, m, l, h, etime_mat, psi_1, phi_1) for z in mat_era])
-			stiff = np.array([rho_stiff_mat(z, etime_mat, G_N) for z in mat_era])
-			plt.ylim(0, max(phi_1, phi_2)*1.1)
-			plt.plot(mat_era, mat, 'b-')
-			plt.plot(mat_era, rad, 'y-')
-			plt.plot(mat_era, stiff, 'r-')
-		
-		#Radiation dominated era begins, n equals 2
-		n = 1/2
-		
-		
-		#Sove for the reheating temperature
-		reh_time = r_time(etime_rad, n, xi, m, l, h, etime_rad, phi_2, psi_2)
-		#print(reh_time)
-		#print reh_time
-		max_density = rho_psi_rad(reh_time, n, xi, m, l, h, etime_rad, phi_2, psi_2)
-		#print max_density
-		#Transfer reheating time to temperature
-		#print "Reheating temperature: "
-		#print math.pow(max_density, 1.0/4.0)
+                    etime_rad = eq_tau(etime_mat, n, xi, m, l, h, etime_mat, psi_1, phi_1)
+                    #print etime_rad
+                    phi_2 = rho_phi_mat(etime_rad, n, xi, m, l, h, etime_mat, phi_1)
+                    psi_2 = rho_psi_mat(etime_rad, n, xi, m, l, h, etime_mat, psi_1, phi_1)
+                    #print phi_2
+                    #print psi_2
+                    if plot:
+                            plt.figure("Matter dominated era")
+                            mat_era = np.linspace(etime_mat, etime_rad*1, resolution) # 100 linearly spaced numbers
+                            mat = np.array([rho_phi_mat(z, n, xi, m, l, h, etime_mat, phi_1) for z in mat_era])
+                            rad = np.array([rho_psi_mat(z, n, xi, m, l, h, etime_mat, psi_1, phi_1) for z in mat_era])
+                            stiff = np.array([rho_stiff_mat(z, etime_mat, G_N) for z in mat_era])
+                            plt.ylim(0, max(phi_1, phi_2)*1.1)
+                            plt.plot(mat_era, mat, 'b-')
+                            plt.plot(mat_era, rad, 'y-')
+                            plt.plot(mat_era, stiff, 'r-')
+                    
+                    #Radiation dominated era begins, n equals 2
+                    n = 1/2
+                    
+                    
+                    #Sove for the reheating temperature
+                    reh_time = r_time(etime_rad, n, xi, m, l, h, etime_rad, phi_2, psi_2)
+                    #print(reh_time)
+                    #print reh_time
+                    max_density = rho_psi_rad(reh_time, n, xi, m, l, h, etime_rad, phi_2, psi_2)
+                    #print max_density
+                    #Transfer reheating time to temperature
+                    #print "Reheating temperature: "
+                    #print math.pow(max_density, 1.0/4.0)
 
-		if plot:
-			plt.figure("Radiation dominated era")
-			rad_era = np.linspace(etime_rad, reh_time*1.05, resolution) # 100 linearly spaced numbers
-			mat = np.array([rho_phi_rad(z, n, xi, m, l, h, etime_rad, phi_2) for z in rad_era])
-			rad = np.array([rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_2, psi_2) for z in rad_era])
-			d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_2, psi_2) for z in rad_era])
-			#print d_rad
-			stiff = np.array([rho_stiff_rad(z, etime_mat, etime_rad, G_N) for z in rad_era])
-			plt.ylim(0, max(rad)*1.1)
-			plt.plot(rad_era, mat, 'b-')
-			plt.plot(rad_era, rad, 'y-')
-			plt.plot(rad_era, stiff, 'r-')
-			plt.plot(rad_era, d_rad, 'g-')
+                    if plot:
+                            plt.figure("Radiation dominated era")
+                            rad_era = np.linspace(etime_rad, reh_time*1.05, resolution) # 100 linearly spaced numbers
+                            mat = np.array([rho_phi_rad(z, n, xi, m, l, h, etime_rad, phi_2) for z in rad_era])
+                            rad = np.array([rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_2, psi_2) for z in rad_era])
+                            d_rad = np.array([d_rho_psi_rad(z, n, xi, m, l, h, etime_rad, phi_2, psi_2) for z in rad_era])
+                            #print d_rad
+                            stiff = np.array([rho_stiff_rad(z, etime_mat, etime_rad, G_N) for z in rad_era])
+                            plt.ylim(0, max(rad)*1.1)
+                            plt.plot(rad_era, mat, 'b-')
+                            plt.plot(rad_era, rad, 'y-')
+                            plt.plot(rad_era, stiff, 'r-')
+                            plt.plot(rad_era, d_rad, 'g-')
 
-			plt.show()
-		#print max_density
-		#print math.pow(max_density, 1.0/4.0)
-		return [max_density**(1/4) ,(max_density, reh_time), (psi_2, etime_rad), (phi_1 ,etime_mat), True]
+                            plt.show()
+                    #print max_density
+                    #print math.pow(max_density, 1.0/4.0)
+                    return [max_density**(1/4) ,(max_density, reh_time), (psi_2, etime_rad), (phi_1 ,etime_mat), True]
+    except:
+        #Run failed
+        return [np.nan, (np.nan, np.nan), (np.nan, np.nan), False]
 
+
+    
 def reheating_time_star(args):
 	return [args, reheating_time(*args)]
 
