@@ -24,7 +24,7 @@ for x in results:
 
 print(len(temps))
 print(temps[0])
-#temps = [x for x in temps if x[1] < 1.1*10**-8]
+temps = [x for x in temps if x[1] < 5*10**-11]
 print(len(temps))
 print(temps[0])
 
@@ -120,7 +120,7 @@ def create_Z(x, y, l, xi):
 
 print(temps[0])
 for lam in [0]:
-	for xi in [0]:
+	for xi in [1/6]:
 		Z, M, T, T2, T3 = create_Z(X, Y, lam, xi)
 		print("Max")
 		print(np.max(Z))

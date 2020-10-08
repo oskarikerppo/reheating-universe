@@ -19,7 +19,7 @@ for x in results:
   except:
     temps.append([x[1][0], x[0][2], x[0][3], x[0][5], x[0][6], x[1][-1], x[1][1][1], x[1][2][1], np.nan])
 
-#temps = [x for x in temps if x[1] < 1.1*10**-8]
+temps = [x for x in temps if x[1] < 5*10**-11]
 #print(len(temps))
 #print(temps)
 mat_temps = []
@@ -57,11 +57,11 @@ def create_Z(mass_points, l, xi, b):
 for xi in [0, 1/6]:
 	for b_p in [b_points[0], b_points[int(len(b_points)/2)], b_points[-1]]:
 
-		points = create_Z(mass_points, 10**-1, xi, b_p)
+		points = create_Z(mass_points, 0, xi, b_p)
 		print(points)
 		print (b_p)
 		plt.plot([p[1] for p in points], [p[0] for p in points], "b-")
-
+		'''
 		points = create_Z(mass_points, 10**-2, xi, b_p)
 		print(points)
 		print (b_p)
@@ -71,7 +71,7 @@ for xi in [0, 1/6]:
 		print(points)
 		print (b_p)
 		plt.plot([p[1] for p in points], [p[0] for p in points], "r:")
-
+		'''
 		        
 		plt.xlabel('$m$', fontsize=16)
 		plt.ylabel('$T_{rh}$', rotation='horizontal', fontsize=16)
