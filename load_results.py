@@ -144,7 +144,7 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig, ax = plt.subplots()
-		im = ax.pcolor(X, Y, Z, shading='auto', cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(Z), vmax=np.nanmax(Z)))
+		im = ax.pcolor(X, Y, Z, cmap='plasma', norm=colors.LogNorm(vmin=np.nanmin(Z), vmax=np.nanmax(Z)))
 		#ax.scatter(X, Y)
 		ticks=np.logspace(np.log10(np.nanmin(Z)), np.log10(np.nanmax(Z)), 6, endpoint=True, base=10)
 		ticks_labels = [create_string_tick(x) for x in ticks]
@@ -153,7 +153,7 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig2, ax2 = plt.subplots()
-		im2 = ax2.pcolor(X, Y, M, shading='auto', cmap='plasma',vmin=0, vmax=1)
+		im2 = ax2.pcolor(X, Y, M, cmap='plasma',vmin=0, vmax=1)
 		#ax2.scatter(X, Y)
 		ticks2 = [0, 1]
 		ticks_labels2 = ["Radiation", "Matter"]
@@ -162,7 +162,7 @@ for lam in [10**-1, 10**-2, 10**-3]:
 
 
 		fig3, ax3 = plt.subplots()
-		im3 = ax3.pcolor(X, Y, T, shading='auto', cmap='plasma', norm=colors.LogNorm(vmin=np.min(T), vmax=np.max(T)))
+		im3 = ax3.pcolor(X, Y, T, cmap='plasma', norm=colors.LogNorm(vmin=np.min(T), vmax=np.max(T)))
 		#ax.scatter(X, Y)
 		ticks3=np.logspace(np.log10(np.min(T)), np.log10(np.max(T)), 6, endpoint=True, base=10)
 		ticks_labels3 = [create_string_tick(x) for x in ticks3]
@@ -170,7 +170,7 @@ for lam in [10**-1, 10**-2, 10**-3]:
 		cbar3.ax.set_yticklabels(ticks_labels3)
 
 		fig4, ax4 = plt.subplots()
-		im4 = ax4.pcolor(X, Y, T2, shading='auto', cmap='plasma', norm=colors.LogNorm(vmin=np.min(T2), vmax=np.max(T2)))
+		im4 = ax4.pcolor(X, Y, T2, cmap='plasma', norm=colors.LogNorm(vmin=np.min(T2), vmax=np.max(T2)))
 		#ax.scatter(X, Y)
 		ticks4=np.logspace(np.log10(np.min(T2)), np.log10(np.max(T2)), 6, endpoint=True, base=10)
 		ticks_labels4 = [create_string_tick(x) for x in ticks4]
@@ -186,7 +186,7 @@ for lam in [10**-1, 10**-2, 10**-3]:
 		c_cmap.set_bad('black', 1.)
 		m_array = np.ma.array(T3, mask=np.isnan(T3))
 		fig5, ax5 = plt.subplots()
-		im5 = ax5.pcolormesh(X, Y, m_array, shading='auto', cmap=c_cmap, norm=colors.LogNorm(vmin=np.nanmin(T3), vmax=np.nanmax(T3)))
+		im5 = ax5.pcolormesh(X, Y, m_array, cmap=c_cmap, norm=colors.LogNorm(vmin=np.nanmin(T3), vmax=np.nanmax(T3)))
 		#im5 = ax5.scatter(X, Y, c=T3, s=T3 ,cmap=c_cmap, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 		#ax5.scatter(X, Y, c=T3, vmin=np.nanmin(T3), vmax=np.nanmax(T3))
 		ticks5=np.logspace(np.log10(np.nanmin(T3)), np.log10(np.nanmax(T3)), 6, endpoint=True, base=10)
